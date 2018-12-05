@@ -1,0 +1,93 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@drawable/airhockeybackground"
+    android:orientation="vertical"
+    android:gravity="center">
+
+    <TextView
+        android:id="@+id/textView2"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentStart="true"
+        android:layout_alignParentTop="true"
+        android:text="Select Game Settings"
+        android:textSize="40sp"
+        android:gravity="center"
+        android:textColor="@android:color/black"
+        android:layout_weight="1"/>
+
+    <TextView
+        android:id="@+id/required_fields"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        android:gravity="center"
+        android:text=""
+        android:textColor="@android:color/holo_red_dark"/>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentStart="true"
+        android:layout_alignParentTop="true"
+        android:gravity="center"
+        android:orientation="vertical"
+        android:layout_weight="1">
+
+        <EditText
+            android:id="@+id/edit_puck_size"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="Enter puck size 1-10"
+            android:inputType="number"
+            android:shadowColor="@android:color/black"
+            android:gravity="center"/>
+
+        <EditText
+            android:id="@+id/edit_puck_speed"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="Enter puck speed 1-10"
+            android:inputType="number"
+            android:gravity="center"/>
+
+        <EditText
+            android:id="@+id/edit_goal_size"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="Enter goal size 1-10"
+            android:inputType="number"
+            android:gravity="center"
+            />
+
+        <EditText
+            android:id="@+id/edit_rounds"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="Enter number of rounds"
+            android:inputType="number"
+            android:gravity="center"/>
+
+        <EditText
+            android:id="@+id/edit_time"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="Enter time for each round in minutes"
+            android:inputType="number"
+            android:gravity="center"/>
+
+    </LinearLayout>
+
+    <Button
+        android:id="@+id/submit_btn"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_centerHorizontal="true"
+        android:layout_marginBottom="87dp"
+        android:gravity="center"
+        android:text="Submit" />
+
+</LinearLayout>

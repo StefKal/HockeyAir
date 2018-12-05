@@ -1,0 +1,11 @@
+<resources>
+    <string name="app_name">HockeyAIr</string>
+    <string name="join_game">Join Game</string>
+    <string name="create_game">Create Game</string>
+    <string name="about">About</string>
+    <string name="about_txt">This is an Air Hockey game made by Dylan and Stefanos</string>
+    <string name="ok"> OK </string>
+    <string name="waiting_connection">Waiting for host to choose settings…</string>
+    <string name="available_games">Available Games:</string>
+    <string name="device_name">Device Name:</string>
+</resources>
