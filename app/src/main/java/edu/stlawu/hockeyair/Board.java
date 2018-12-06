@@ -13,6 +13,15 @@ public class Board implements GameObject {
     static int MYGOAL = 1;
     static int OPPONENTGOAL = 2;
 
+    // static vars for collisionPos
+    static int LEFT_TOP = 10;
+    static int RIGHT_TOP = 11;
+    static int RIGHT_BOTTOM = 12;
+    static int RIGHT = 13;
+    static int LEFT = 14;
+    static int BOTTOM = 15;
+    static int TOP = 16;
+
     private Path myBoard;
     private Path opponentBoard;
     private Path fullBoard;
@@ -22,14 +31,13 @@ public class Board implements GameObject {
 
     private int boardColor;
 
-
     private float xTopRight;
     private float xTopLeft;
 
     private float xInterceptLeft;
     private float xInterceptRight;
 
-    float xCenter;
+    private float xCenter;
     private float yCenter;
 
     public Board(int boardColor){
@@ -107,6 +115,41 @@ public class Board implements GameObject {
 
     }
 
+    // gets center of screen by returning yCenter
+    public double getCenterY(){
+        return yCenter;
+    }
+
+    //gets center view
+    private void getCenter(){
+        double slope_one = ScreenConstants.SCREEN_HEIGHT / -xTopRight;
+        double slope_two = ScreenConstants.SCREEN_HEIGHT / (ScreenConstants.SCREEN_WIDTH-xTopLeft);
+
+        double B1 = (double)ScreenConstants.SCREEN_HEIGHT;
+        double B2 = (double)ScreenConstants.SCREEN_HEIGHT - (slope_two * ScreenConstants.SCREEN_WIDTH);
+
+        xCenter = (float)((B2-B1) / (slope_one - slope_two));
+        yCenter = (float)((xCenter * slope_one) + ScreenConstants.SCREEN_HEIGHT);
+
+        System.out.println("xCenter: " + xCenter);
+        System.out.println("XLength: " + ScreenConstants.SCREEN_WIDTH);
+
+        // get intercepts
+        getIntercepts();
+    }
+
+    // get intercepts
+    private void getIntercepts(){
+        double length_one = xTopRight - xTopLeft;
+        double length_two = ScreenConstants.SCREEN_WIDTH;
+
+        double midLength =(2 * length_one * length_two) / (length_one + length_two);
+
+        xInterceptLeft =(float)(xCenter - midLength/2);
+        xInterceptRight =(float)(xCenter + midLength/2);
+
+    }
+
     // check if goal was scored and which goal it was scored on
     public int scoredGoal(Puck puck) {
 
@@ -159,12 +202,12 @@ public class Board implements GameObject {
 
     // check if the puck is still on the board
     public String containsPuck(Puck puck){
-        return contains(fullBoard,puck.getPuck());
+        return collisionPos(fullBoard,puck.getPuck());
     }
 
     //check if paddle is still on the board
     public String containsPaddle(Paddle paddle){
-        return contains(myBoard,paddle.getPaddle());
+        return collisionPos(myBoard,paddle.getPaddle());
     }
 
     // determine the pos of the puck (my side or theirs)
@@ -176,7 +219,7 @@ public class Board implements GameObject {
     }
 
     //get pos of puck and paddle collision
-    private String contains(Path path,RectF obj) {
+    private String collisionPos(Path path,RectF obj) {
         Region board = new Region(0, 0, ScreenConstants.SCREEN_WIDTH, ScreenConstants.SCREEN_HEIGHT);
 
         Path circle = new Path();
