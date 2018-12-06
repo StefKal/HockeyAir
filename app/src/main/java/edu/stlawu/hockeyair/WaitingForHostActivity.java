@@ -24,7 +24,7 @@ public class WaitingForHostActivity extends Activity {
         scheduleTaskExecutor.scheduleAtFixedRate(new Runnable() {
             public void run() {
                 if (JoinGameActivity.sendReceive.textSent.equals("True")) {
-                    startActivity(new Intent(WaitingForHostActivity.this, StartingGame.class));
+                    startActivity(new Intent(WaitingForHostActivity.this, GameActivity.class));
                 }
             }
         }, 0, 5, TimeUnit.SECONDS);

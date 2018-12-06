@@ -84,7 +84,7 @@ public class CustomizeGameActivity extends Activity {
         public void run() {
             String msg = "True";
             JoinGameActivity.sendReceive.write(msg.getBytes());
-            startActivity(new Intent(CustomizeGameActivity.this, AndroidLauncher.class));
+            startActivity(new Intent(CustomizeGameActivity.this, GameActivity.class));
         }
     });
 
