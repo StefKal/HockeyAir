@@ -1,8 +1,11 @@
 package edu.stlawu.hockeyair;
 
 import android.content.Context;
+import android.graphics.Canvas;
 import android.graphics.Color;
+import android.graphics.Paint;
 import android.graphics.Point;
+import android.graphics.Rect;
 import android.graphics.RectF;
 import android.hardware.Sensor;
 import android.hardware.SensorEvent;
@@ -24,7 +27,6 @@ public class Panel extends SurfaceView implements SurfaceHolder.Callback, Sensor
     private Paddle opponent;
     private Point opponentPoint;
 
-    float [] history = new float[2];
     double oldX;
     double oldY;
 
@@ -40,6 +42,9 @@ public class Panel extends SurfaceView implements SurfaceHolder.Callback, Sensor
 
     int puckVelocityX;
     int puckVelocityY;
+    int playerCollisionMultiplier=0;
+    int opponentCollisionMultipler=0;
+
 
     int playerScore;
     int opponentScore;
@@ -63,6 +68,11 @@ public class Panel extends SurfaceView implements SurfaceHolder.Callback, Sensor
 
         playerScore = 0;
         opponentScore = 0;
+
+
+        playerPoint = new Point(ScreenConstants.SCREEN_WIDTH/2, 3*ScreenConstants.SCREEN_HEIGHT/4);
+        opponentPoint = new Point(ScreenConstants.SCREEN_WIDTH/2, ScreenConstants.SCREEN_HEIGHT/4 );
+        puckPoint = new Point(ScreenConstants.SCREEN_WIDTH/2, ScreenConstants.SCREEN_HEIGHT/2);
 
         player.update(playerPoint);
         opponent.update(opponentPoint);
@@ -104,12 +114,83 @@ public class Panel extends SurfaceView implements SurfaceHolder.Callback, Sensor
     }
 
     //checks for intercepts with the goal
-    public void goalIntersectUpdate(){
+    public void passTheGoal(){
         if(theBoard.goalTouch(puck)){
             if(theBoard.scoredGoal(puck)==Board.MYGOAL)opponentScore++;
             else playerScore++;
             gameOver=true;
         }
+    }
+
+    public void puckIntersects(){
+
+        // if puck collides with player paddle
+        if(puck.collides(player)){
+            if(playerCollisionMultiplier == 0){
+                playerCollisionMultiplier++;
+                puckVelocityX = -puckVelocityX + playerPaddleVelocityX;
+                puckVelocityY = -puckVelocityY + playerPaddleVelocityY;
+
+            }
+        }
+        if(playerCollisionMultiplier > 0){
+            playerCollisionMultiplier++;
+        }
+        if(playerCollisionMultiplier == 10){
+            playerCollisionMultiplier = 0;
+        }
+
+        // if puck collides with opponent paddle
+        if (puck.collides(opponent)){
+            if(opponentCollisionMultipler == 0){
+                opponentCollisionMultipler++;
+                puckVelocityX = -puckVelocityX + opponentPaddleVelocityX;
+                puckVelocityY = -puckVelocityY + opponentPaddleVelocityY;
+            }
+        }
+        if(opponentCollisionMultipler > 0){
+            opponentCollisionMultipler++;
+        }
+        if(opponentCollisionMultipler == 10){
+            opponentCollisionMultipler = 0;
+        }
+
+    }
+
+    public void draw(Canvas canvas){
+        super.draw(canvas);
+        canvas.drawColor(Color.WHITE);
+
+        theBoard.draw(canvas);
+        puck.draw(canvas);
+        opponent.draw(canvas);
+        player.draw(canvas);
+
+        if(gameOver){
+            Paint paint = new Paint();
+            paint.setTextSize(100);
+            paint.setColor(Color.GREEN);
+            drawScore(canvas, paint, playerScore + " -- " + opponentScore);
+        }
+    }
+
+    public void drawScore(Canvas canvas, Paint paint, String score){
+        paint.setTextAlign(Paint.Align.LEFT);
+        Rect rect = new Rect();
+        canvas.getClipBounds(rect);
+        int canvasHeight = rect.height();
+        int canvasWidth = rect.width();
+
+        paint.getTextBounds(score, 0, score.length(), rect);
+        float x = (float) (canvasHeight / 2.0 - rect.height() / 2.0 - rect.bottom);
+        float y = (float) (canvasWidth / 2.0 + rect.width() / 2.0 - rect.left);
+        canvas.drawText(score, x, y, paint);
+    }
+
+    private void updatePoint(float dx, float dy){
+        oldX = playerPoint.x;
+        oldY = playerPoint.y;
+        playerPoint.set((int)(oldX+dx*8),(int)( oldY+dy*8));
     }
 
     @Override
