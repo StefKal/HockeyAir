@@ -10,8 +10,8 @@ import android.graphics.Region;
 
 public class Board implements GameObject {
 
-    private static int MYGOAL = 1;
-    private static int OPPONENTGOAL = 2;
+    static int MYGOAL = 1;
+    static int OPPONENTGOAL = 2;
 
     private Path myBoard;
     private Path opponentBoard;
@@ -100,6 +100,7 @@ public class Board implements GameObject {
 
 
     }
+
 
     @Override
     public void update(Point point) {

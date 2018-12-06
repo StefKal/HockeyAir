@@ -16,7 +16,7 @@ public class Paddle implements GameObject {
     private float paddleSize;
     private float handleSize;
 
-    public Paddle(RectF paddle, int paddleColor, int paddleSize, int handleColor ) {
+    public Paddle(RectF paddle, int paddleSize, int paddleColor,  int handleColor ) {
         this.paddle = paddle;
         this.paddleSize = paddleSize;
         this.handleColor = handleColor;
