@@ -189,6 +189,8 @@ public class Panel extends SurfaceView implements SurfaceHolder.Callback, Sensor
         canvas.drawText(score, x, y, paint);
     }
 
+    // drag and drop
+
     private void updatePoint(float dx, float dy){
         oldX = playerPoint.x;
         oldY = playerPoint.y;
