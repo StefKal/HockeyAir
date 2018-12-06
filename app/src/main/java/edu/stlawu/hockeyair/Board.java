@@ -6,8 +6,12 @@ import android.graphics.Paint;
 import android.graphics.Path;
 import android.graphics.Point;
 import android.graphics.RectF;
+import android.graphics.Region;
 
 public class Board implements GameObject {
+
+    private static int MYGOAL = 1;
+    private static int OPPONENTGOAL = 2;
 
     private Path myBoard;
     private Path opponentBoard;
@@ -101,4 +105,118 @@ public class Board implements GameObject {
     public void update(Point point) {
 
     }
+
+    // check if goal was scored and which goal it was scored on
+    public int scoredGoal(Puck puck) {
+
+        // board screen
+        Region board = new Region(0, 0, ScreenConstants.SCREEN_WIDTH, ScreenConstants.SCREEN_HEIGHT);
+
+        // create paths
+        Path goal = new Path();
+        Path oppGoal = new Path();
+        Path hockeyPuck = new Path();
+
+        // draw rect for goal and puck to check intersect
+        goal.addRect(myGoal,Path.Direction.CCW); // CCW Counter Clockwise
+        oppGoal.addRect(opponentGoal, Path.Direction.CCW);
+        hockeyPuck.addOval(puck.getPuck(), Path.Direction.CCW);
+
+        Region region_goal=new Region();
+        Region region_hockeyPuck=new Region();
+        Region region_oppGoal = new Region();
+
+        // create region paths
+        region_goal.setPath(goal,board);
+        region_hockeyPuck.setPath(hockeyPuck,board);
+        region_oppGoal.setPath(oppGoal,board);
+
+
+        // check for intersect and return which goals
+        if(region_goal.op(region_hockeyPuck, Region.Op.INTERSECT)){
+
+            return MYGOAL;
+
+        }
+        else if(region_oppGoal.op(region_hockeyPuck, Region.Op.INTERSECT)){
+
+            return OPPONENTGOAL;
+
+        } else {
+
+            return 0;
+
+        }
+
+
+    }
+
+    // puck in goal?
+    public boolean goalTouch(Puck puck){
+        return scoredGoal(puck)!= 0;
+    }
+
+    // check if the puck is still on the board
+    public String containsPuck(Puck puck){
+        return contains(fullBoard,puck.getPuck());
+    }
+
+    //check if paddle is still on the board
+    public String containsPaddle(Paddle paddle){
+        return contains(myBoard,paddle.getPaddle());
+    }
+
+    // determine the pos of the puck (my side or theirs)
+    public boolean puckOnMyBoard(int X, int Y){
+        Region board = new Region(0, 0, ScreenConstants.SCREEN_WIDTH, ScreenConstants.SCREEN_HEIGHT);
+        Region region = new Region();
+        region.setPath(myBoard, board);
+        return region.contains(X,Y);
+    }
+
+    //get pos of puck and paddle collision
+    private String contains(Path path,RectF obj) {
+        Region board = new Region(0, 0, ScreenConstants.SCREEN_WIDTH, ScreenConstants.SCREEN_HEIGHT);
+
+        Path circle = new Path();
+        circle.addRect(obj, Path.Direction.CCW); // counter clock wise 
+
+        Region region = new Region();
+        region.setPath(path, board);
+
+        int xleft = (int) (obj.centerX() - obj.width() / 2);
+        int yleft = (int) (obj.centerY());
+
+        int xtop = (int) (obj.centerX());
+        int ytop = (int) (obj.centerY() - obj.height() / 2);
+
+        int xright = (int) (obj.centerX() + obj.width() / 2);
+        int yright = (int) (obj.centerY());
+
+        int xbottom = (int) (obj.centerX());
+        int ybottom = (int) (obj.centerY() + obj.height() / 2);
+
+        if (!region.contains(xleft, yleft) && !region.contains(xtop,ytop)) {
+            return "left-top";
+        } else if (!region.contains(xleft, yleft) && !region.contains(xbottom,ybottom)) {
+            return "left-bottom";
+        } else if (!region.contains(xright, yright) && !region.contains(xtop,ytop)) {
+            return "right-top";
+        } else if (!region.contains(xright, yright) && !region.contains(xbottom,ybottom)) {
+            return "right-bottom";
+        } else if(!region.contains(xright,yright)){
+            return "right";
+        }else if(!region.contains(xleft,yleft)){
+            return "left";
+        } else if (!region.contains(xbottom,ybottom)){
+            return "bottom";
+        }else if (!region.contains(xtop,ytop)){
+            return "top";
+        } else {
+            return null;
+        }
+
+
+    }
+
 }
