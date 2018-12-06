@@ -45,9 +45,9 @@ public class Board implements GameObject {
         this.boardColor = boardColor;
         xTopLeft = ScreenConstants.SCREEN_WIDTH;
         xTopRight = ScreenConstants. SCREEN_WIDTH;
-        //getCenter();
+        getCenter();
 
-        fullBoard=drawRectangle(0,ScreenConstants.SCREEN_HEIGHT,
+        fullBoard = drawRectangle(0,ScreenConstants.SCREEN_HEIGHT,
                 ScreenConstants.SCREEN_WIDTH,
                 ScreenConstants.SCREEN_HEIGHT,
                 xTopRight,0,xTopLeft,0);
@@ -55,16 +55,18 @@ public class Board implements GameObject {
         myBoard = drawRectangle(0,ScreenConstants.SCREEN_HEIGHT,ScreenConstants.SCREEN_WIDTH,ScreenConstants.SCREEN_HEIGHT,
                 xInterceptRight,yCenter,xInterceptLeft,yCenter);
 
-        opponentBoard=drawRectangle(xInterceptLeft,yCenter,xInterceptRight,yCenter,
+        opponentBoard = drawRectangle(xInterceptLeft,yCenter,xInterceptRight,yCenter,
                 xTopRight,0,xTopLeft,0);
 
-        myGoal= new RectF((ScreenConstants.SCREEN_WIDTH/2)-
+        myGoal = new RectF((ScreenConstants.SCREEN_WIDTH/2)-
                 (ScreenConstants.SCREEN_WIDTH/4),
                 ScreenConstants.SCREEN_HEIGHT-20,
                 (ScreenConstants.SCREEN_WIDTH/2)+(ScreenConstants.SCREEN_WIDTH/4),
                 ScreenConstants.SCREEN_HEIGHT+20);
 
+        // define constant multiplier
         double multiplier = ScreenConstants.getMultiplier(new Point(0,0));
+
         opponentGoal = new RectF((ScreenConstants.SCREEN_WIDTH/2)-((int)(multiplier*ScreenConstants.SCREEN_WIDTH/4)),
                 -20, (ScreenConstants.SCREEN_WIDTH/2)+((int)(multiplier*ScreenConstants.SCREEN_WIDTH/4)),
                 +20);
@@ -77,7 +79,7 @@ public class Board implements GameObject {
     }
 
 
-    //draws a trapezoid(boards)
+    //draws a the board
     public Path drawRectangle(float x1,float y1,float x2,float y2,float x3,float y3, float x4, float y4){
         Path rectangle = new Path();
         rectangle.reset();
@@ -90,6 +92,8 @@ public class Board implements GameObject {
 
         return rectangle;
     }
+
+    // draws using the canvas
     @Override
     public void draw(Canvas canvas) {
         Paint paint = new Paint();
