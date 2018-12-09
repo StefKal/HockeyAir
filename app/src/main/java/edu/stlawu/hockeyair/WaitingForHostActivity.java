@@ -27,7 +27,7 @@ public class WaitingForHostActivity extends Activity {
                     startActivity(new Intent(WaitingForHostActivity.this, GameActivity.class));
                 }
             }
-        }, 0, 5, TimeUnit.SECONDS);
+        }, 0, 1, TimeUnit.SECONDS);
 
 
     }

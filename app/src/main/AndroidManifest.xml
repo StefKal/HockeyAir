@@ -29,5 +29,6 @@
         <activity android:name=".JoinGameActivity" />
         <activity android:name=".WaitingForHostActivity" />
         <activity android:name=".CustomizeGameActivity" />
+        <activity android:name=".GameActivity"/>
     </application>
 </manifest>
