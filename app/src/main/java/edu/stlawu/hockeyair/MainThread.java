@@ -15,7 +15,7 @@ public class MainThread extends Thread {
     private Panel gamePanel;
     private boolean running;
     public static Canvas canvas;
-    //sad
+    //sadsd
     public MainThread(SurfaceHolder surfaceHolder, Panel gamePanel){
         super();
         this.surfaceHolder=surfaceHolder;
