@@ -13,7 +13,12 @@ import android.hardware.SensorEventListener;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
 
+
 public class Panel extends SurfaceView implements SurfaceHolder.Callback, SensorEventListener {
+
+    private String status;
+
+    private MainThread mainThread;
 
     private boolean gameOver=false;
 
@@ -49,9 +54,13 @@ public class Panel extends SurfaceView implements SurfaceHolder.Callback, Sensor
     int playerScore;
     int opponentScore;
 
-    public Panel(Context context){
+    public Panel(Context context, String status){
         super(context);
+        mainThread = new MainThread(getHolder(), this);
+        mainThread.setRunning(true);
 
+        mainThread.start();
+        this.status = status;
         theBoard = new Board(Color.MAGENTA);
         player = new Paddle(new RectF(100,100,
                 (ScreenConstants.SCREEN_WIDTH+ScreenConstants.SCREEN_WIDTH)/9,
@@ -92,7 +101,6 @@ public class Panel extends SurfaceView implements SurfaceHolder.Callback, Sensor
     //gameLoop
     public void update(){
         if(!gameOver) {
-
         }
     }
 
@@ -114,15 +122,15 @@ public class Panel extends SurfaceView implements SurfaceHolder.Callback, Sensor
         puckVelocityX=0;
         puckVelocityY=0;
     }
-
-    //checks for intercepts with the goal
-    public void passTheGoal(){
-        if(theBoard.goalTouch(puck)){
-            if(theBoard.scoredGoal(puck)==Board.MYGOAL)opponentScore++;
-            else playerScore++;
-            gameOver=true;
-        }
-    }
+//
+//    //checks for intercepts with the goal
+//    public void passTheGoal(){
+//        if(theBoard.goalTouch(puck)){
+//            if(theBoard.scoredGoal(puck)==Board.MYGOAL)opponentScore++;
+//            else playerScore++;
+//            gameOver=true;
+//        }
+//    }
 
     public void puckIntersects(){
 
@@ -209,6 +217,7 @@ public class Panel extends SurfaceView implements SurfaceHolder.Callback, Sensor
 
     @Override
     public void surfaceCreated(SurfaceHolder holder) {
+        mainThread = new MainThread(getHolder(),this);
 
     }
 
@@ -219,6 +228,15 @@ public class Panel extends SurfaceView implements SurfaceHolder.Callback, Sensor
 
     @Override
     public void surfaceDestroyed(SurfaceHolder holder) {
+        while(true){
+            try{
+                mainThread.setRunning(false);
+                mainThread.join();
+
+            }catch(Exception e){
+                e.printStackTrace();
+            }
+        }
 
     }
 }

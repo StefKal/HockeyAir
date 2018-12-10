@@ -20,14 +20,15 @@ public class WaitingForHostActivity extends Activity {
 
         ScheduledExecutorService scheduleTaskExecutor = Executors.newScheduledThreadPool(1);
 
-        // This schedule a runnable task every 2 minutes
         scheduleTaskExecutor.scheduleAtFixedRate(new Runnable() {
             public void run() {
                 if (JoinGameActivity.sendReceive.textSent.equals("True")) {
-                    startActivity(new Intent(WaitingForHostActivity.this, GameActivity.class));
+                    Intent intent = new Intent(WaitingForHostActivity.this, GameActivity.class);
+                    intent.putExtra("status", "client");
+                    startActivity(intent);
                 }
             }
-        }, 0, 1, TimeUnit.SECONDS);
+        }, 0, 2, TimeUnit.SECONDS);
 
 
     }
