@@ -16,7 +16,7 @@ public class Board implements GameObject {
     private Path fullBoard;
     private Path playerGoal;
     private Path opponentGoal;
-    //tes
+    //test
 
     private int boardWidth;
     private int boardHeight;
