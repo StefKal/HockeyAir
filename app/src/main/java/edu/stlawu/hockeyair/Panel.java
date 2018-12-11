@@ -81,7 +81,7 @@ public class Panel extends SurfaceView implements SurfaceHolder.Callback, Sensor
 
         puck = new Puck(new RectF((ScreenConstants.SCREEN_WIDTH/2)- 80, ScreenConstants.SCREEN_HEIGHT/2 - 80,
                 (ScreenConstants.SCREEN_WIDTH/2) + 80 , ScreenConstants.SCREEN_HEIGHT/2 + 80),
-                Color.BLUE, 120);
+                Color.rgb(182,33,45), 120);
 
         playerScore = 0;
         opponentScore = 0;
@@ -175,6 +175,7 @@ public class Panel extends SurfaceView implements SurfaceHolder.Callback, Sensor
 
     public void draw(Canvas canvas){
         super.draw(canvas);
+        Paint paint = new Paint();
         canvas.drawColor(Color.WHITE);
 
         theBoard.draw(canvas);
@@ -183,24 +184,23 @@ public class Panel extends SurfaceView implements SurfaceHolder.Callback, Sensor
         player.draw(canvas);
 
         if(gameOver){
-            Paint paint = new Paint();
+
             paint.setTextSize(100);
             paint.setColor(Color.GREEN);
-            drawScore(canvas, paint, playerScore + " -- " + opponentScore);
+            drawScore(canvas, paint, playerScore + " - " + opponentScore);
         }
     }
 
     public void drawScore(Canvas canvas, Paint paint, String score){
         paint.setTextAlign(Paint.Align.LEFT);
+        paint.setTextSize(80);
         Rect rect = new Rect();
         canvas.getClipBounds(rect);
-        int canvasHeight = rect.height();
-        int canvasWidth = rect.width();
+
 
         paint.getTextBounds(score, 0, score.length(), rect);
-        float x = (float) (canvasHeight / 2.0 - rect.height() / 2.0 - rect.bottom);
-        float y = (float) (canvasWidth / 2.0 + rect.width() / 2.0 - rect.left);
-        canvas.drawText(score, x, y, paint);
+        canvas.drawText(score, 200, 200, paint);
+        canvas.drawText(score, ScreenConstants.SCREEN_WIDTH - 280, ScreenConstants.SCREEN_HEIGHT - 200, paint);
     }
 
     // drag and drop

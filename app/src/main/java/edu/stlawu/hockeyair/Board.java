@@ -94,14 +94,15 @@ public class Board implements GameObject {
     @Override
     public void draw(Canvas canvas) {
         Paint paint = new Paint();
-        paint.setColor(Color.CYAN);
+        paint.setColor(Color.rgb(182,119,33));
         canvas.drawPath(opponentBoard,paint);
-        paint.setColor(Color.rgb(149, 48, 179));
+        paint.setColor(Color.rgb(127,84,23));
         canvas.drawPath(playerBoard,paint);
         paint.setColor(Color.WHITE);
         canvas.drawPath(playerGoal, paint);
         canvas.drawPath(opponentGoal, paint);
         canvas.drawArc(centerCirlce, 0, 360, false, paint);
+        paint.setColor(Color.rgb(33, 182, 168));
         paint.setStrokeWidth(50);
         canvas.drawLine(0, yCenter, ScreenConstants.SCREEN_WIDTH, yCenter, paint);
 
