@@ -43,13 +43,12 @@ public class MainThread extends Thread {
 
             try{
                 canvas = this.surfaceHolder.lockCanvas();
-                synchronized (surfaceHolder){
-                    //Does an update
-                    this.gamePanel.update();
-                    //then draws
-                    this.gamePanel.draw(canvas);
 
-                }
+                //Does an update
+                this.gamePanel.update();
+                //then draws
+                this.gamePanel.draw(canvas);
+
             }catch(Exception e){
                 e.printStackTrace();
             }finally{
@@ -60,22 +59,22 @@ public class MainThread extends Thread {
                 }
             }
 
-            TimeMillis = (System.nanoTime() - startTime)/1000000;
-            waitTime = targetTime-TimeMillis;
-            try{
-                if(waitTime>0){
-                    this.sleep(waitTime);
-                }
-
-            }catch (Exception e){e.printStackTrace();}
-
-            totalTime+=System.nanoTime()-startTime;
-            frameCount++;
-            if(frameCount==MAX_FPS){
-                averageFPS=1000/((totalTime/frameCount)/1000000);
-                frameCount=0;
-                System.out.println(averageFPS);
-            }
+//            TimeMillis = (System.nanoTime() - startTime)/1000000;
+//            waitTime = targetTime-TimeMillis;
+//            try{
+//                if(waitTime>0){
+//                    this.sleep(waitTime);
+//                }
+//
+//            }catch (Exception e){e.printStackTrace();}
+//
+//            totalTime+=System.nanoTime()-startTime;
+//            frameCount++;
+//            if(frameCount==MAX_FPS){
+//                averageFPS=1000/((totalTime/frameCount)/1000000);
+//                frameCount=0;
+//                System.out.println(averageFPS);
+//            }
         }
 
     }

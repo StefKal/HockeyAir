@@ -8,6 +8,7 @@ import android.graphics.Point;
 import android.graphics.Rect;
 import android.graphics.RectF;
 import android.graphics.Region;
+import android.renderscript.ScriptC;
 
 public class Board implements GameObject {
 
@@ -46,10 +47,10 @@ public class Board implements GameObject {
     public Board(int boardColor){
         this.boardColor = boardColor;
 
-        this.fullBoard = makeRectanglePath(topLeftX, topLeftY, topRightX, topRightY, botLeftX, botLeftY, botRightX, botRightY);
+        this.fullBoard = makeRectanglePath(0, 0, ScreenConstants.SCREEN_WIDTH, ScreenConstants.SCREEN_HEIGHT);
 
-        this.playerBoard = makeRectanglePath(topLeftX, yCenter, topRightX, yCenter, botLeftX, botLeftY, botRightX, botRightY);
-        this.opponentBoard = makeRectanglePath(topLeftX, topLeftY, topRightX, topRightY, botLeftX, yCenter, botRightX, yCenter);
+        this.playerBoard = makeRectanglePath(0, 0, ScreenConstants.SCREEN_WIDTH, yCenter);
+        this.opponentBoard = makeRectanglePath(0, yCenter, ScreenConstants.SCREEN_WIDTH, ScreenConstants.SCREEN_HEIGHT);
 
         //this.playerGoal = makeRectanglePath();
         //this.opponentGoal = makeRectanglePath();
@@ -66,13 +67,13 @@ public class Board implements GameObject {
     }
 
     //draws the board
-    private Path makeRectanglePath(float x1, float y1, float x2, float y2, float x3, float y3, float x4, float y4){
+    private Path makeRectanglePath(float left, float top, float right, float bot){
         Path rectangle = new Path();
 
-        float left = getDistance(x1, y1,x3,y3);
-        float top = getDistance(x1,y1, x2, y2);
-        float right = getDistance(x2, y2, x4, y4);
-        float bot = getDistance(x3, y3, x4, y4);
+//        float left = getDistance(x1, y1,x3,y3);
+//        float top = getDistance(x1,y1, x2, y2);
+//        float right = getDistance(x2, y2, x4, y4);
+//        float bot = getDistance(x3, y3, x4, y4);
 
         rectangle.addRect(left, top, right, bot, Path.Direction.CW);
 
@@ -83,11 +84,12 @@ public class Board implements GameObject {
     @Override
     public void draw(Canvas canvas) {
         Paint paint = new Paint();
-        paint.setColor(boardColor);
-        canvas.drawPath(playerGoal,paint);
-        canvas.drawPath(opponentBoard,paint);
         paint.setColor(Color.BLACK);
-        paint.setStrokeWidth(15);
+        canvas.drawPath(opponentBoard,paint);
+        paint.setColor(Color.RED);
+        canvas.drawPath(playerBoard,paint);
+        paint.setColor(Color.WHITE);
+        paint.setStrokeWidth(300);
         canvas.drawText("FUCK THAT",ScreenConstants.SCREEN_WIDTH/2, yCenter, paint);
 
         paint.setStyle(Paint.Style.STROKE);

@@ -14,7 +14,7 @@ import android.view.SurfaceHolder;
 import android.view.SurfaceView;
 
 
-public class Panel extends SurfaceView implements SurfaceHolder.Callback, SensorEventListener {
+public class Panel extends SurfaceView implements SurfaceHolder.Callback, SensorEventListener, Runnable {
 
     private String status;
 
@@ -54,28 +54,35 @@ public class Panel extends SurfaceView implements SurfaceHolder.Callback, Sensor
     int playerScore;
     int opponentScore;
 
+    SurfaceHolder myHolder;
+    Thread myThread = null;
+    boolean isRunning = false;
+
     public Panel(Context context, String status){
         super(context);
-        mainThread = new MainThread(getHolder(), this);
-        mainThread.setRunning(true);
+        myHolder = getHolder();
+        isRunning = true;
+        myThread = new Thread(this);
+        myThread.start();
+        //mainThread.setRunning(true);
 
-        mainThread.start();
+        //mainThread.start();
         this.status = status;
         theBoard = new Board(Color.MAGENTA);
-        player = new Paddle(new RectF(100,100,
-                (ScreenConstants.SCREEN_WIDTH+ScreenConstants.SCREEN_WIDTH)/9,
-                (ScreenConstants.SCREEN_WIDTH+ScreenConstants.SCREEN_WIDTH)/9),
-                10,  Color.RED,Color.BLACK);
+        player = new Paddle(new RectF(ScreenConstants.SCREEN_WIDTH/2 ,ScreenConstants.SCREEN_HEIGHT,
+                ScreenConstants.SCREEN_WIDTH/2  + 10,
+                0),
+                100,  Color.YELLOW,Color.WHITE);
 
-        opponent= new Paddle(new RectF(100,100,
-                (ScreenConstants.SCREEN_WIDTH+ScreenConstants.SCREEN_WIDTH)/9,
-                (ScreenConstants.SCREEN_WIDTH+ScreenConstants.SCREEN_WIDTH)/9),
-                10, Color.RED,Color.BLACK);
+        opponent= new Paddle(new RectF(ScreenConstants.SCREEN_WIDTH/2 ,0,
+                ScreenConstants.SCREEN_WIDTH/2  + 10,
+                ScreenConstants.SCREEN_HEIGHT),
+                100, Color.YELLOW,Color.WHITE);
 
         puck = new Puck(new RectF(100,100,
                 (ScreenConstants.SCREEN_WIDTH+ScreenConstants.SCREEN_WIDTH)/10,
                 (ScreenConstants.SCREEN_WIDTH+ScreenConstants.SCREEN_WIDTH)/10),
-                10, Color.WHITE);
+                100, Color.WHITE);
 
         playerScore = 0;
         opponentScore = 0;
@@ -217,7 +224,7 @@ public class Panel extends SurfaceView implements SurfaceHolder.Callback, Sensor
 
     @Override
     public void surfaceCreated(SurfaceHolder holder) {
-        mainThread = new MainThread(getHolder(),this);
+        //mainThread = new MainThread(getHolder(),this);
 
     }
 
@@ -228,15 +235,28 @@ public class Panel extends SurfaceView implements SurfaceHolder.Callback, Sensor
 
     @Override
     public void surfaceDestroyed(SurfaceHolder holder) {
-        while(true){
-            try{
-                mainThread.setRunning(false);
-                mainThread.join();
+//        while(true){
+//            try{
+//                mainThread.setRunning(false);
+//                mainThread.join();
+//
+//            }catch(Exception e){
+//                e.printStackTrace();
+//            }
+//        }
 
-            }catch(Exception e){
-                e.printStackTrace();
-            }
+    }
+
+    @Override
+    public void run() {
+        while(isRunning){
+            if(!myHolder.getSurface().isValid())
+                continue;
+
+            Canvas canvas = myHolder.lockCanvas();
+          //  update();
+            draw(canvas);
+            myHolder.unlockCanvasAndPost(canvas);
         }
-
     }
 }
