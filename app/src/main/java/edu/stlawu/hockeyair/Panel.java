@@ -10,11 +10,14 @@ import android.graphics.RectF;
 import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
+import android.util.Log;
+import android.view.MotionEvent;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
+import android.view.View;
 
 
-public class Panel extends SurfaceView implements SurfaceHolder.Callback, SensorEventListener, Runnable {
+public class Panel extends SurfaceView implements SurfaceHolder.Callback, View.OnTouchListener, Runnable {
 
     private String status;
 
@@ -32,8 +35,8 @@ public class Panel extends SurfaceView implements SurfaceHolder.Callback, Sensor
     private Paddle opponent;
     private Point opponentPoint;
 
-    double oldX;
-    double oldY;
+    float oldX;
+    float oldY;
 
     double myPaddleOldX;
     double myPaddleOldY;
@@ -211,15 +214,7 @@ public class Panel extends SurfaceView implements SurfaceHolder.Callback, Sensor
         playerPoint.set((int)(oldX+dx*8),(int)( oldY+dy*8));
     }
 
-    @Override
-    public void onSensorChanged(SensorEvent event) {
 
-    }
-
-    @Override
-    public void onAccuracyChanged(Sensor sensor, int accuracy) {
-
-    }
 
     @Override
     public void surfaceCreated(SurfaceHolder holder) {
@@ -257,5 +252,43 @@ public class Panel extends SurfaceView implements SurfaceHolder.Callback, Sensor
             draw(canvas);
             myHolder.unlockCanvasAndPost(canvas);
         }
+    }
+
+    @Override
+    public boolean onTouchEvent(MotionEvent event) {
+        int action = event.getAction();
+
+        switch (action){
+            case MotionEvent.ACTION_DOWN:
+                Log.e("DOWN", "DOWN");
+            case MotionEvent.ACTION_MOVE:
+                Log.e("MOVE", "MOVe");
+                float newX = event.getX();
+                float newY = event.getY();
+                float offsetX = getOffset(oldX, newX, playerPoint.x);
+                float offsetY = getOffset(oldY, newY, playerPoint.y);
+
+                if(newX == playerPoint.x && newY == playerPoint.y) {
+                    playerPoint.set((int) offsetX, (int) offsetY);
+                    player.update(playerPoint);
+                    oldX = newX;
+                    oldY = newY;
+
+                }
+                break;
+
+
+        }
+
+
+        return true;
+    }
+    private float getOffset(float oldVal, float newVal, float current) {
+        return current + (newVal - oldVal);
+    }
+
+    @Override
+    public boolean onTouch(View view, MotionEvent motionEvent) {
+        return false;
     }
 }
