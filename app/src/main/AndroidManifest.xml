@@ -16,7 +16,7 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
         <activity
-            android:name=".MainActivity"
+            android:name=".GameActivity"
             android:configChanges="keyboard|keyboardHidden|navigation|orientation|screenSize|screenLayout"
             android:label="@string/app_name"
             android:screenOrientation="portrait">
@@ -29,6 +29,6 @@
         <activity android:name=".JoinGameActivity" />
         <activity android:name=".WaitingForHostActivity" />
         <activity android:name=".CustomizeGameActivity" />
-        <activity android:name=".GameActivity"/>
+        <activity android:name=".MainActivity"/>
     </application>
 </manifest>

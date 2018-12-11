@@ -17,6 +17,8 @@ public class Board implements GameObject {
     private Path fullBoard;
     private Path playerGoal;
     private Path opponentGoal;
+
+    private RectF centerCirlce;
     //test
 
     private int boardWidth;
@@ -58,6 +60,19 @@ public class Board implements GameObject {
         this.boardWidth = ScreenConstants.SCREEN_WIDTH;
         this.boardHeight = ScreenConstants.SCREEN_HEIGHT;
 
+        playerGoal = makeRectanglePath((ScreenConstants.SCREEN_WIDTH/2)-(ScreenConstants.SCREEN_WIDTH/4), ScreenConstants.SCREEN_HEIGHT-20,
+                (ScreenConstants.SCREEN_WIDTH/2)+(ScreenConstants.SCREEN_WIDTH/4), ScreenConstants.SCREEN_HEIGHT+20);
+
+        opponentGoal = makeRectanglePath((ScreenConstants.SCREEN_WIDTH/2)-(ScreenConstants.SCREEN_WIDTH/4),
+                -20, (ScreenConstants.SCREEN_WIDTH/2)+(ScreenConstants.SCREEN_WIDTH/4), +20);
+
+        centerCirlce = new RectF((ScreenConstants.SCREEN_WIDTH/2)- 200, ScreenConstants.SCREEN_HEIGHT/2 - 200,
+                (ScreenConstants.SCREEN_WIDTH/2) + 200 , yCenter + 200);
+
+
+
+
+
 
 
     }
@@ -70,11 +85,6 @@ public class Board implements GameObject {
     private Path makeRectanglePath(float left, float top, float right, float bot){
         Path rectangle = new Path();
 
-//        float left = getDistance(x1, y1,x3,y3);
-//        float top = getDistance(x1,y1, x2, y2);
-//        float right = getDistance(x2, y2, x4, y4);
-//        float bot = getDistance(x3, y3, x4, y4);
-
         rectangle.addRect(left, top, right, bot, Path.Direction.CW);
 
         return rectangle;
@@ -84,18 +94,16 @@ public class Board implements GameObject {
     @Override
     public void draw(Canvas canvas) {
         Paint paint = new Paint();
-        paint.setColor(Color.BLACK);
+        paint.setColor(Color.CYAN);
         canvas.drawPath(opponentBoard,paint);
-        paint.setColor(Color.RED);
+        paint.setColor(Color.rgb(149, 48, 179));
         canvas.drawPath(playerBoard,paint);
         paint.setColor(Color.WHITE);
-        paint.setStrokeWidth(300);
-        canvas.drawText("FUCK THAT",ScreenConstants.SCREEN_WIDTH/2, yCenter, paint);
-
-        paint.setStyle(Paint.Style.STROKE);
-        paint.setColor(Color.BLACK);
-
-        paint.setColor(Color.BLACK);
+        canvas.drawPath(playerGoal, paint);
+        canvas.drawPath(opponentGoal, paint);
+        canvas.drawArc(centerCirlce, 0, 360, false, paint);
+        paint.setStrokeWidth(50);
+        canvas.drawLine(0, yCenter, ScreenConstants.SCREEN_WIDTH, yCenter, paint);
 
 
     }

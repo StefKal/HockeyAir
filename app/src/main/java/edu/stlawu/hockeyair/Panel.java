@@ -72,17 +72,16 @@ public class Panel extends SurfaceView implements SurfaceHolder.Callback, Sensor
         player = new Paddle(new RectF(ScreenConstants.SCREEN_WIDTH/2 ,ScreenConstants.SCREEN_HEIGHT,
                 ScreenConstants.SCREEN_WIDTH/2  + 10,
                 0),
-                100,  Color.YELLOW,Color.WHITE);
+                200,  Color.RED,Color.WHITE);
 
-        opponent= new Paddle(new RectF(ScreenConstants.SCREEN_WIDTH/2 ,0,
+        opponent= new Paddle(new RectF(ScreenConstants.SCREEN_WIDTH/2 ,ScreenConstants.SCREEN_HEIGHT,
                 ScreenConstants.SCREEN_WIDTH/2  + 10,
-                ScreenConstants.SCREEN_HEIGHT),
-                100, Color.YELLOW,Color.WHITE);
+                0),
+                200 + 60,  Color.RED,Color.WHITE);
 
-        puck = new Puck(new RectF(100,100,
-                (ScreenConstants.SCREEN_WIDTH+ScreenConstants.SCREEN_WIDTH)/10,
-                (ScreenConstants.SCREEN_WIDTH+ScreenConstants.SCREEN_WIDTH)/10),
-                100, Color.WHITE);
+        puck = new Puck(new RectF((ScreenConstants.SCREEN_WIDTH/2)- 80, ScreenConstants.SCREEN_HEIGHT/2 - 80,
+                (ScreenConstants.SCREEN_WIDTH/2) + 80 , ScreenConstants.SCREEN_HEIGHT/2 + 80),
+                Color.BLUE, 120);
 
         playerScore = 0;
         opponentScore = 0;
