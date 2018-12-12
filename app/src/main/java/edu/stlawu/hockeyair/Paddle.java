@@ -41,9 +41,8 @@ public class Paddle implements GameObject {
 
     @Override
     public void update(Point point) {
-        float multiplier = ScreenConstants.getMultiplier(point);
-        paddle.set(point.x - paddleSize * multiplier/2, point.y - paddleSize*multiplier/2, point.x+paddleSize*multiplier/2, point.y + paddleSize*multiplier/2);
-        handle.set(point.x - handleSize * multiplier/2, point.y - handleSize*multiplier/2, point.x+handleSize*multiplier/2, point.y + handleSize*multiplier/2);
+        paddle.set(point.x - paddleSize , point.y - paddleSize, point.x+paddleSize, point.y + paddleSize);
+        handle.set(point.x - handleSize, point.y - handleSize, point.x+handleSize, point.y + handleSize);
 
     }
 }

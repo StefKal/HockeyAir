@@ -1,6 +1,7 @@
 package edu.stlawu.hockeyair;
 
 import android.content.Context;
+import android.content.Intent;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
@@ -15,6 +16,10 @@ import android.view.MotionEvent;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
 import android.view.View;
+
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.ObjectOutputStream;
 
 
 public class Panel extends SurfaceView implements SurfaceHolder.Callback, View.OnTouchListener, Runnable {
@@ -31,6 +36,7 @@ public class Panel extends SurfaceView implements SurfaceHolder.Callback, View.O
 
     private Point playerPoint;
     private Point puckPoint;
+    private byte[] playerpointmessage;
 
     private Paddle opponent;
     private Point opponentPoint;
@@ -75,16 +81,16 @@ public class Panel extends SurfaceView implements SurfaceHolder.Callback, View.O
         player = new Paddle(new RectF(ScreenConstants.SCREEN_WIDTH/2 ,ScreenConstants.SCREEN_HEIGHT,
                 ScreenConstants.SCREEN_WIDTH/2  + 10,
                 0),
-                200,  Color.RED,Color.WHITE);
+                90,  Color.RED,Color.WHITE);
 
         opponent= new Paddle(new RectF(ScreenConstants.SCREEN_WIDTH/2 ,ScreenConstants.SCREEN_HEIGHT,
                 ScreenConstants.SCREEN_WIDTH/2  + 10,
                 0),
-                200 + 60,  Color.RED,Color.WHITE);
+                90,  Color.RED,Color.WHITE);
 
         puck = new Puck(new RectF((ScreenConstants.SCREEN_WIDTH/2)- 80, ScreenConstants.SCREEN_HEIGHT/2 - 80,
                 (ScreenConstants.SCREEN_WIDTH/2) + 80 , ScreenConstants.SCREEN_HEIGHT/2 + 80),
-                Color.rgb(182,33,45), 120);
+                Color.rgb(182,33,45), 50);
 
         playerScore = 0;
         opponentScore = 0;
@@ -110,6 +116,9 @@ public class Panel extends SurfaceView implements SurfaceHolder.Callback, View.O
     //gameLoop
     public void update(){
         if(!gameOver) {
+            if(!JoinGameActivity.sendReceive.textSent.equals(status)){
+               // opponentPoint = JoinGameActivity.sendReceive
+            }
         }
     }
 
@@ -259,33 +268,46 @@ public class Panel extends SurfaceView implements SurfaceHolder.Callback, View.O
         int action = event.getAction();
 
         switch (action){
-            case MotionEvent.ACTION_DOWN:
-                Log.e("DOWN", "DOWN");
+            case MotionEvent.ACTION_DOWN :
+            break;
             case MotionEvent.ACTION_MOVE:
-                Log.e("MOVE", "MOVe");
-                float newX = event.getX();
-                float newY = event.getY();
-                float offsetX = getOffset(oldX, newX, playerPoint.x);
-                float offsetY = getOffset(oldY, newY, playerPoint.y);
 
-                if(newX == playerPoint.x && newY == playerPoint.y) {
-                    playerPoint.set((int) offsetX, (int) offsetY);
+                float newX = event.getRawX();
+                float newY = event.getRawY();
+
+                if(player.getPaddle().contains(newX, newY)) {
+                    if(newY < ScreenConstants.SCREEN_HEIGHT/2)
+                        newY = ScreenConstants.SCREEN_HEIGHT/2;
+                    // sendCoordinates.start();
+                    playerPoint.set((int) newX, (int) newY);
                     player.update(playerPoint);
                     oldX = newX;
                     oldY = newY;
-
                 }
                 break;
-
-
         }
-
-
         return true;
     }
-    private float getOffset(float oldVal, float newVal, float current) {
-        return current + (newVal - oldVal);
-    }
+    Thread sendCoordinates = new Thread(new Runnable() {
+        @Override
+        public void run() {
+            // Convert Point to Bytes so we can send it over
+            ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+            ObjectOutputStream objectOutputStream = null;
+            try {
+                objectOutputStream = new ObjectOutputStream(outputStream);
+                objectOutputStream.writeObject(playerPoint);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+
+            playerpointmessage = outputStream.toByteArray();
+            JoinGameActivity.sendReceive.write(playerpointmessage);
+
+            //specify the sender
+            JoinGameActivity.sendReceive.write(status.getBytes());
+        }
+    });
 
     @Override
     public boolean onTouch(View view, MotionEvent motionEvent) {

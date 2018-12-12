@@ -1,5 +1,6 @@
 package edu.stlawu.hockeyair;
 
+import android.graphics.Point;
 import android.os.Handler;
 import android.os.Looper;
 import android.os.Message;
@@ -15,8 +16,10 @@ public class SendReceive extends Thread {
     private InputStream inputStream;
     private OutputStream outputStream;
     String textSent = "";
+    Point coordinates;
 
     static final int MESSAGE_READ = 1;
+    static final int COORDINATES = 2;
 
 
     SendReceive(Socket skt){
@@ -38,6 +41,9 @@ public class SendReceive extends Thread {
                     byte[] readbuff = (byte[]) msg.obj;
                     textSent = new String(readbuff, 0, msg.arg1);
                     break;
+                case COORDINATES:
+                    byte[] read = (byte[]) msg.obj;
+                    coordinates = new Point();
             }
         }
     };
@@ -63,6 +69,14 @@ public class SendReceive extends Thread {
 
 
     public void write(byte[] bytes){
+        try {
+            outputStream.write(bytes);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public void sendCoordinates(byte[] bytes){
         try {
             outputStream.write(bytes);
         } catch (IOException e) {

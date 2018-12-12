@@ -27,7 +27,7 @@ public class Puck implements GameObject{
     @Override
     public void update(Point point) {
         float multiplier = ScreenConstants.getMultiplier(point);
-        puck.set(point.x - puckSize * multiplier/2, point.y - puckSize*multiplier/2, point.x+puckSize*multiplier/2, point.y + puckSize*multiplier/2);
+        puck.set(point.x - puckSize , point.y - puckSize, point.x+puckSize, point.y + puckSize);
 
     }
 
