@@ -8,9 +8,11 @@ import android.graphics.Paint;
 import android.graphics.Point;
 import android.graphics.Rect;
 import android.graphics.RectF;
+import android.graphics.Region;
 import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
+import android.location.Location;
 import android.util.Log;
 import android.view.MotionEvent;
 import android.view.SurfaceHolder;
@@ -44,8 +46,20 @@ public class Panel extends SurfaceView implements SurfaceHolder.Callback, View.O
     float oldX;
     float oldY;
 
-    double myPaddleOldX;
-    double myPaddleOldY;
+    double playerPaddleOldX;
+    double playerPaddleOldY;
+
+    int playerDebounce=0;
+    int opponentDebounce=0;
+    
+    int ballVelocityX;
+    int ballVelocityY;
+
+    int playerMalletVelocityX=0;
+    int playerMalletVelocityY=0;
+
+    int opponentMalletVelocityX=0;
+    int opponentMalletVelocityY=0;
 
 
     int playerPaddleVelocityX;
@@ -116,15 +130,54 @@ public class Panel extends SurfaceView implements SurfaceHolder.Callback, View.O
     //gameLoop
     public void update(){
         if(!gameOver) {
+
             if(!JoinGameActivity.sendReceive.textSent.equals(status)){
                // opponentPoint = JoinGameActivity.sendReceive
             }
         }
     }
 
-    public void getPaddleVelocity(){
-        playerPaddleVelocityX = (int) ((player.getPaddle().centerX() - myPaddleOldX)*30);
-        playerPaddleVelocityY = (int) ((player.getPaddle().centerY() - myPaddleOldY)*30);
+    //computes the speed of the paddle
+    public void getPlayerPaddleSpeed(){
+        playerPaddleVelocityX = (int)((player.getPaddle().centerX()-playerPaddleOldX)*30);
+        playerPaddleVelocityX = (int)((player.getPaddle().centerY()-playerPaddleOldY)*30);
+    }
+    //checks if the ball intersected any of the mallets
+    public void ballIntersectUpdate(){
+
+        RectF boardPuck = puck.getPuck();
+        RectF boardPlayer = player.getPaddle();
+        RectF boardOpponent = opponent.getPaddle();
+
+        if(boardPuck.intersect(boardPlayer)){
+            if(playerDebounce==0) {
+                playerDebounce++;
+                ballVelocityX += -ballVelocityX + playerMalletVelocityX;
+                ballVelocityY += -ballVelocityY + playerMalletVelocityY;
+
+            }
+        }
+
+        if(playerDebounce>0) {
+            playerDebounce++;
+        }
+        if(playerDebounce==10){
+            playerDebounce=0;
+        }
+
+        if(boardPuck.intersect(boardOpponent)){
+            if(opponentDebounce==0) {
+                opponentDebounce++;
+                ballVelocityX=-ballVelocityX+opponentMalletVelocityX;
+                ballVelocityY=-ballVelocityY+opponentMalletVelocityY;
+            }
+        }
+        if(opponentDebounce>0){
+            opponentDebounce++;
+        }
+        if(opponentDebounce==10){
+            opponentDebounce=0;
+        }
     }
 
     public void goal(){
@@ -149,41 +202,6 @@ public class Panel extends SurfaceView implements SurfaceHolder.Callback, View.O
 //            gameOver=true;
 //        }
 //    }
-
-    public void puckIntersects(){
-
-        // if puck collides with player paddle
-        if(puck.collides(player)){
-            if(playerCollisionMultiplier == 0){
-                playerCollisionMultiplier++;
-                puckVelocityX = -puckVelocityX + playerPaddleVelocityX;
-                puckVelocityY = -puckVelocityY + playerPaddleVelocityY;
-
-            }
-        }
-        if(playerCollisionMultiplier > 0){
-            playerCollisionMultiplier++;
-        }
-        if(playerCollisionMultiplier == 10){
-            playerCollisionMultiplier = 0;
-        }
-
-        // if puck collides with opponent paddle
-        if (puck.collides(opponent)){
-            if(opponentCollisionMultipler == 0){
-                opponentCollisionMultipler++;
-                puckVelocityX = -puckVelocityX + opponentPaddleVelocityX;
-                puckVelocityY = -puckVelocityY + opponentPaddleVelocityY;
-            }
-        }
-        if(opponentCollisionMultipler > 0){
-            opponentCollisionMultipler++;
-        }
-        if(opponentCollisionMultipler == 10){
-            opponentCollisionMultipler = 0;
-        }
-
-    }
 
     public void draw(Canvas canvas){
         super.draw(canvas);
@@ -214,16 +232,6 @@ public class Panel extends SurfaceView implements SurfaceHolder.Callback, View.O
         canvas.drawText(score, 200, 200, paint);
         canvas.drawText(score, ScreenConstants.SCREEN_WIDTH - 280, ScreenConstants.SCREEN_HEIGHT - 200, paint);
     }
-
-    // drag and drop
-
-    private void updatePoint(float dx, float dy){
-        oldX = playerPoint.x;
-        oldY = playerPoint.y;
-        playerPoint.set((int)(oldX+dx*8),(int)( oldY+dy*8));
-    }
-
-
 
     @Override
     public void surfaceCreated(SurfaceHolder holder) {
@@ -257,7 +265,12 @@ public class Panel extends SurfaceView implements SurfaceHolder.Callback, View.O
                 continue;
 
             Canvas canvas = myHolder.lockCanvas();
-          //  update();
+
+
+            getPlayerPaddleSpeed();
+            ballIntersectUpdate();
+
+            //update();
             draw(canvas);
             myHolder.unlockCanvasAndPost(canvas);
         }

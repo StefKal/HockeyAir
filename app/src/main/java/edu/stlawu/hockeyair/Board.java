@@ -102,7 +102,7 @@ public class Board implements GameObject {
         canvas.drawPath(playerGoal, paint);
         canvas.drawPath(opponentGoal, paint);
         canvas.drawArc(centerCirlce, 0, 360, false, paint);
-        paint.setColor(Color.rgb(33, 182, 168));
+        paint.setColor(Color.WHITE);
         paint.setStrokeWidth(50);
         canvas.drawLine(0, yCenter, ScreenConstants.SCREEN_WIDTH, yCenter, paint);
 
