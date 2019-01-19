@@ -34,6 +34,9 @@ public class Puck implements GameObject{
     public RectF getPuck() {
         return puck;
     }
+    public int getPuckSize() {
+        return puckSize;
+    }
 
     public Boolean collides(Paddle paddle){
         float paddleRad = paddle.getPaddle().width()/2;

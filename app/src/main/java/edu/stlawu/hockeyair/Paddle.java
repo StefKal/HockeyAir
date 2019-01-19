@@ -13,6 +13,7 @@ public class Paddle implements GameObject {
     private int paddleColor;
     private int handleColor;
 
+
     private float paddleSize;
     private float handleSize;
 
@@ -24,6 +25,11 @@ public class Paddle implements GameObject {
         handle = new RectF(paddle.left/2, paddle.top/2, paddle.right/2, paddle.bottom/2);
         handleSize = paddleSize/4;
 
+    }
+
+    public float getSize()
+    {
+        return paddleSize;
     }
 
     public RectF getPaddle() {

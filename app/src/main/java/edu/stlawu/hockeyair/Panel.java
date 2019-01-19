@@ -17,11 +17,13 @@ import android.util.Log;
 import android.view.MotionEvent;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
+import android.view.VelocityTracker;
 import android.view.View;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.ObjectOutputStream;
+import java.util.Random;
 
 
 public class Panel extends SurfaceView implements SurfaceHolder.Callback, View.OnTouchListener, Runnable {
@@ -61,15 +63,17 @@ public class Panel extends SurfaceView implements SurfaceHolder.Callback, View.O
     int opponentMalletVelocityX=0;
     int opponentMalletVelocityY=0;
 
+    private VelocityTracker mVelocityTracker = null;
 
-    int playerPaddleVelocityX;
-    int playerPaddleVelocityY;
+
+    float playerPaddleVelocityX;
+    float playerPaddleVelocityY;
 
     int opponentPaddleVelocityX;
     int opponentPaddleVelocityY;
 
-    int puckVelocityX;
-    int puckVelocityY;
+    float puckVelocityX;
+    float puckVelocityY;
     int playerCollisionMultiplier=0;
     int opponentCollisionMultipler=0;
 
@@ -113,10 +117,11 @@ public class Panel extends SurfaceView implements SurfaceHolder.Callback, View.O
         playerPoint = new Point(ScreenConstants.SCREEN_WIDTH/2, 3*ScreenConstants.SCREEN_HEIGHT/4);
         opponentPoint = new Point(ScreenConstants.SCREEN_WIDTH/2, ScreenConstants.SCREEN_HEIGHT/4 );
         puckPoint = new Point(ScreenConstants.SCREEN_WIDTH/2, ScreenConstants.SCREEN_HEIGHT/2);
-
+        
         player.update(playerPoint);
         opponent.update(opponentPoint);
         puck.update(puckPoint);
+
 
         puckVelocityX = 0;
         puckVelocityY = 0;
@@ -137,47 +142,69 @@ public class Panel extends SurfaceView implements SurfaceHolder.Callback, View.O
         }
     }
 
-    //computes the speed of the paddle
-    public void getPlayerPaddleSpeed(){
-        playerPaddleVelocityX = (int)((player.getPaddle().centerX()-playerPaddleOldX)*30);
-        playerPaddleVelocityX = (int)((player.getPaddle().centerY()-playerPaddleOldY)*30);
-    }
     //checks if the ball intersected any of the mallets
     public void ballIntersectUpdate(){
 
-        RectF boardPuck = puck.getPuck();
-        RectF boardPlayer = player.getPaddle();
-        RectF boardOpponent = opponent.getPaddle();
+        puckPoint.x = (int) (puckPoint.x + (puckVelocityX));
+        puckPoint.y = (int) (puckPoint.y + (puckVelocityY));
+        puckPoint.set(puckPoint.x, puckPoint.y);
+        puck.update(puckPoint);
 
-        if(boardPuck.intersect(boardPlayer)){
-            if(playerDebounce==0) {
-                playerDebounce++;
-                ballVelocityX += -ballVelocityX + playerMalletVelocityX;
-                ballVelocityY += -ballVelocityY + playerMalletVelocityY;
+        float playerdx = puckPoint.x - playerPoint.x;
+        float playerdy = puckPoint.y - playerPoint.y;
 
-            }
+        float opponentdx = puckPoint.x - opponentPoint.x;
+        float opponentdy = puckPoint.y - opponentPoint.y;
+
+        float playerdistance = (float) Math.hypot(playerdx, playerdy);
+        float opponentdistance = (float) Math.hypot(opponentdx, opponentdy);
+        
+        if (playerdistance < puck.getPuckSize() + player.getSize()){
+            //They collide
+            puckVelocityX = playerPaddleVelocityX;
+            puckVelocityY = playerPaddleVelocityY;
+            puckPoint.x = (int) (puckPoint.x + (puckVelocityX));
+            puckPoint.y = (int) (puckPoint.y + (puckVelocityY));
+
+            puckPoint.set(puckPoint.x, puckPoint.y);
+            puck.update(puckPoint);
+            
+        }else if (opponentdistance < puck.getPuckSize() + opponent.getSize()){
+            //They collide
+            puckVelocityX += opponentPaddleVelocityX;
+            puckVelocityY += opponentPaddleVelocityY;
+            puckPoint.x = (int) (puckPoint.x + (puckVelocityX));
+            puckPoint.y = (int) (puckPoint.y + (puckVelocityY));
+
+            puckPoint.set(puckPoint.x, puckPoint.y);
+            puck.update(puckPoint);
         }
 
-        if(playerDebounce>0) {
-            playerDebounce++;
-        }
-        if(playerDebounce==10){
-            playerDebounce=0;
-        }
 
-        if(boardPuck.intersect(boardOpponent)){
-            if(opponentDebounce==0) {
-                opponentDebounce++;
-                ballVelocityX=-ballVelocityX+opponentMalletVelocityX;
-                ballVelocityY=-ballVelocityY+opponentMalletVelocityY;
-            }
+        // Wall collisions
+        if (puckPoint.x + puck.getPuckSize() > ScreenConstants.SCREEN_WIDTH){
+            puckVelocityX = -puckVelocityX;
+            puckPoint.x = (int) (puckPoint.x + (puckVelocityX));
+            puckPoint.set(puckPoint.x, puckPoint.y);
+            puck.update(puckPoint);
+        }else if(puckPoint.x - puck.getPuckSize() < 0){
+            puckVelocityX = -puckVelocityX;
+            puckPoint.x = (int) (puckPoint.x + (puckVelocityX));
+            puckPoint.set(puckPoint.x, puckPoint.y);
+            puck.update(puckPoint);
+        }else if(puckPoint.y - puck.getPuckSize() < 0){
+            puckVelocityY = -puckVelocityY;
+            puckPoint.y = (int) (puckPoint.y + (puckVelocityY));
+            puckPoint.set(puckPoint.x, puckPoint.y);
+            puck.update(puckPoint);
+        }else if(puckPoint.y + puck.getPuckSize() > ScreenConstants.SCREEN_HEIGHT){
+            puckVelocityY = -puckVelocityY;
+            puckPoint.y = (int) (puckPoint.y + (puckVelocityY));
+            puckPoint.set(puckPoint.x, puckPoint.y);
+            puck.update(puckPoint);
         }
-        if(opponentDebounce>0){
-            opponentDebounce++;
-        }
-        if(opponentDebounce==10){
-            opponentDebounce=0;
-        }
+        puckVelocityY = (float) (puckVelocityY * 0.99);
+        puckVelocityX = (float) (puckVelocityX * 0.99);
     }
 
     public void goal(){
@@ -266,8 +293,6 @@ public class Panel extends SurfaceView implements SurfaceHolder.Callback, View.O
 
             Canvas canvas = myHolder.lockCanvas();
 
-
-            getPlayerPaddleSpeed();
             ballIntersectUpdate();
 
             //update();
@@ -282,21 +307,37 @@ public class Panel extends SurfaceView implements SurfaceHolder.Callback, View.O
 
         switch (action){
             case MotionEvent.ACTION_DOWN :
-            break;
+                if(mVelocityTracker == null){
+                    mVelocityTracker = VelocityTracker.obtain();
+                }else{
+                    mVelocityTracker.clear();
+                }
+                mVelocityTracker.addMovement(event);
+                break;
             case MotionEvent.ACTION_MOVE:
+                mVelocityTracker.addMovement(event);
+
+
 
                 float newX = event.getRawX();
                 float newY = event.getRawY();
 
                 if(player.getPaddle().contains(newX, newY)) {
-                    if(newY < ScreenConstants.SCREEN_HEIGHT/2)
-                        newY = ScreenConstants.SCREEN_HEIGHT/2;
+//                    if(newY < ScreenConstants.SCREEN_HEIGHT/2)
+//                        newY = ScreenConstants.SCREEN_HEIGHT/2;
                     // sendCoordinates.start();
+                    mVelocityTracker.computeCurrentVelocity(10);
+
+                    playerPaddleVelocityX = mVelocityTracker.getXVelocity();
+                    playerPaddleVelocityY = mVelocityTracker.getYVelocity();
                     playerPoint.set((int) newX, (int) newY);
                     player.update(playerPoint);
                     oldX = newX;
                     oldY = newY;
                 }
+                break;
+            case MotionEvent.ACTION_CANCEL:
+                mVelocityTracker.recycle();
                 break;
         }
         return true;
