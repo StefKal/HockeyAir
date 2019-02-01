@@ -38,14 +38,4 @@ public class Puck implements GameObject{
         return puckSize;
     }
 
-    public Boolean collides(Paddle paddle){
-        float paddleRad = paddle.getPaddle().width()/2;
-        float paddleX = paddle.getPaddle().centerX();
-        float paddleY = paddle.getPaddle().centerY();
-
-        double distance = Math.sqrt(Math.pow(puck.centerX() - paddleX,2)+Math.pow(puck.centerY()-paddleY,2));
-
-        return (distance <= paddleRad +(puck.width()/2));
-    }
-
 }

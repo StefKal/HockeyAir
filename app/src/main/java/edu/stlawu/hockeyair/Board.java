@@ -107,6 +107,8 @@ public class Board implements GameObject {
         canvas.drawLine(0, yCenter, ScreenConstants.SCREEN_WIDTH, yCenter, paint);
 
 
+
+
     }
 
     @Override
