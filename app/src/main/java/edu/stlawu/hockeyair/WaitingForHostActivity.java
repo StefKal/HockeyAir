@@ -18,17 +18,25 @@ public class WaitingForHostActivity extends Activity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.waiting_for_host);
 
-        ScheduledExecutorService scheduleTaskExecutor = Executors.newScheduledThreadPool(1);
+        final ScheduledExecutorService scheduleTaskExecutor = Executors.newScheduledThreadPool(1);
 
         scheduleTaskExecutor.scheduleAtFixedRate(new Runnable() {
             public void run() {
                 if (JoinGameActivity.sendReceive.textSent.equals("True")) {
+
+                    JoinGameActivity.sendReceive.write("Got".getBytes());
                     Intent intent = new Intent(WaitingForHostActivity.this, GameActivity.class);
                     intent.putExtra("status", "client");
                     startActivity(intent);
+                    try {
+                        scheduleTaskExecutor.wait(1000);
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
+                    scheduleTaskExecutor.shutdown();
                 }
             }
-        }, 0, 2, TimeUnit.SECONDS);
+        }, 0, 1000, TimeUnit.MILLISECONDS);
 
 
     }

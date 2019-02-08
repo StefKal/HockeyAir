@@ -9,8 +9,12 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
 
+import java.sql.Time;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 
 public class CustomizeGameActivity extends Activity {
 
@@ -67,6 +71,7 @@ public class CustomizeGameActivity extends Activity {
 //                    myList.set(2, (Integer.getInteger(goal_size.toString())));
 //                    myList.set(3, (Integer.getInteger(rnd_num.toString())));
 //                    myList.set(4, (Integer.getInteger(time.toString())));
+                    submit.setEnabled(false);
                     writeThread.start();
 
 
@@ -75,15 +80,27 @@ public class CustomizeGameActivity extends Activity {
             }
         });
     }
+    final ScheduledExecutorService scheduleTaskExecutor = Executors.newScheduledThreadPool(1);
 
     Thread writeThread = new Thread(new Runnable() {
         @Override
         public void run() {
+
             String msg = "True";
             JoinGameActivity.sendReceive.write(msg.getBytes());
-            Intent intent = new Intent(CustomizeGameActivity.this, GameActivity.class);
-            intent.putExtra("status", "host");
-            startActivity(intent);
+            scheduleTaskExecutor.scheduleAtFixedRate(new Runnable() {
+                @Override
+                public void run() {
+                    if(JoinGameActivity.sendReceive.textSent.equals("Got")){
+                        Intent intent = new Intent(CustomizeGameActivity.this, GameActivity.class);
+                        intent.putExtra("status", "host");
+                        startActivity(intent);
+                        scheduleTaskExecutor.shutdown();
+
+                    }
+                }
+            }, 0, 1000, TimeUnit.MILLISECONDS);
+
         }
     });
 
