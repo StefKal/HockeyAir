@@ -16,6 +16,7 @@ public class SendReceive extends Thread {
     private OutputStream outputStream;
     String textSent = "";
     String coordinates = "";
+    String puckCoordinates = "";
 
 
     static final int MESSAGE_READ = 1;
@@ -42,9 +43,31 @@ public class SendReceive extends Thread {
                     textSent = new String(readbuff, 0, msg.arg1);
                     break;
 
-                case 2:
-                    byte[] read = (byte[]) msg.obj;
-                    coordinates = new String(read, 0, msg.arg1);
+
+            }
+        }
+    };
+
+
+    Handler paddleHandler = new Handler(Looper.getMainLooper()){
+      @Override
+      public void handleMessage(Message msg){
+          switch (msg.what){
+              case 2:
+                  byte[] read = (byte[]) msg.obj;
+                  coordinates = new String(read, 0, msg.arg1);
+                  break;
+          }
+      }
+    };
+
+    Handler puckHandler = new Handler(Looper.getMainLooper()){
+        @Override
+        public void handleMessage(Message msg){
+            switch (msg.what) {
+                case 3:
+                    byte[] puckRead = (byte[]) msg.obj;
+                    puckCoordinates = new String(puckRead, 0, msg.arg1);
                     break;
             }
         }
@@ -54,21 +77,28 @@ public class SendReceive extends Thread {
 
     @Override
     public void run() {
-        byte[] buffer = new byte[1024];
+        byte[] buffer = new byte[500];
         int bytes;
 
         while(socket != null){
                 try {
                     bytes = inputStream.read(buffer);
                     if (bytes > 0) {
-                        if (bytes <= 5) {
+                        if (bytes < 5){
+
                             Message msg = handler.obtainMessage(1, bytes, -1, buffer);
                             handler.sendMessage(msg);
+                        }else if (bytes > 5 && bytes < 10) {
+                            Message msg2 = puckHandler.obtainMessage(3, bytes, -1, buffer);
+                            puckHandler.sendMessage(msg2);
+                        }else{
+
+                            Message msg = paddleHandler.obtainMessage(2, bytes, -1, buffer);
+                            paddleHandler.sendMessage(msg);
+
                         }
-                        else {
-                            Message msg = handler.obtainMessage(2, bytes, -1, buffer);
-                            handler.sendMessage(msg);
-                        }
+
+                        
                     }
                 } catch (IOException e) {
                     e.printStackTrace();
@@ -82,6 +112,7 @@ public class SendReceive extends Thread {
         try {
 
             outputStream.write(bytes);
+            outputStream.flush();
         } catch (IOException e) {
             e.printStackTrace();
         }

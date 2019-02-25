@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -91,6 +92,7 @@ public class CustomizeGameActivity extends Activity {
             scheduleTaskExecutor.scheduleAtFixedRate(new Runnable() {
                 @Override
                 public void run() {
+                    Log.e("Text:", JoinGameActivity.sendReceive.textSent );
                     if(JoinGameActivity.sendReceive.textSent.equals("Got")){
                         Intent intent = new Intent(CustomizeGameActivity.this, GameActivity.class);
                         intent.putExtra("status", "host");

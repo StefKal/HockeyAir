@@ -28,11 +28,7 @@ public class WaitingForHostActivity extends Activity {
                     Intent intent = new Intent(WaitingForHostActivity.this, GameActivity.class);
                     intent.putExtra("status", "client");
                     startActivity(intent);
-                    try {
-                        scheduleTaskExecutor.wait(1000);
-                    } catch (InterruptedException e) {
-                        e.printStackTrace();
-                    }
+
                     scheduleTaskExecutor.shutdown();
                 }
             }
