@@ -12,6 +12,7 @@ import android.widget.TextView;
 
 import java.sql.Time;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
@@ -87,13 +88,13 @@ public class CustomizeGameActivity extends Activity {
         @Override
         public void run() {
 
-            String msg = "True";
-            JoinGameActivity.sendReceive.write(msg.getBytes());
+
+            JoinGameActivity.sendReceive.write("true");
+
             scheduleTaskExecutor.scheduleAtFixedRate(new Runnable() {
                 @Override
                 public void run() {
-                    Log.e("Text:", JoinGameActivity.sendReceive.textSent );
-                    if(JoinGameActivity.sendReceive.textSent.equals("Got")){
+                    if(JoinGameActivity.sendReceive.textSent.equals("got")){
                         Intent intent = new Intent(CustomizeGameActivity.this, GameActivity.class);
                         intent.putExtra("status", "host");
                         startActivity(intent);

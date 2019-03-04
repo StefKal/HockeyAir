@@ -1,19 +1,13 @@
 package edu.stlawu.hockeyair;
 
 import android.content.Context;
-import android.content.Intent;
-import android.content.IntentFilter;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Point;
 import android.graphics.Rect;
 import android.graphics.RectF;
-import android.graphics.Region;
-import android.hardware.Sensor;
-import android.hardware.SensorEvent;
-import android.hardware.SensorEventListener;
-import android.location.Location;
+
 import android.util.Log;
 import android.view.MotionEvent;
 import android.view.SurfaceHolder;
@@ -21,12 +15,7 @@ import android.view.SurfaceView;
 import android.view.VelocityTracker;
 import android.view.View;
 
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
-import java.io.ObjectOutputStream;
-import java.nio.ByteBuffer;
 import java.util.Arrays;
-import java.util.Random;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
@@ -45,7 +34,7 @@ public class Panel extends SurfaceView implements SurfaceHolder.Callback, View.O
 
     private Point playerPoint;
     private Point puckPoint;
-    private byte[] playerpointmessage;
+
 
     private Paddle opponent;
     private Point opponentPoint;
@@ -117,55 +106,68 @@ public class Panel extends SurfaceView implements SurfaceHolder.Callback, View.O
         opponentPaddleVelocityX = 0;
         opponentPaddleVelocityY = 0;
         sendCoordinates.start();
+
+
     }
 
 
-    ScheduledExecutorService updateTask = Executors.newScheduledThreadPool(1);
     //gameLoop
     public void update(){
         if(!gameOver) {
-            updateTask.scheduleAtFixedRate(new Runnable() {
-                public void run() {
-                    // if(!JoinGameActivity.sendReceive.textSent.equals(status)) {
-                    String opponentCoord = JoinGameActivity.sendReceive.coordinates;
-                    String[] opponentCoordList = opponentCoord.split(",");
-                    int opponentX = Integer.parseInt(opponentCoordList[0]); // raw coords of player
-                    int opponentY = Integer.parseInt(opponentCoordList[1]);
-                  //  int opponentVelocityX = Integer.parseInt(opponentCoordList[2]);
-                  //  int opponentVelocityY = Integer.parseInt(opponentCoordList[3]);
 
-                   // opponentPaddleVelocityX = (-1) *opponentVelocityX;
-                   // opponentPaddleVelocityY = (-1) *opponentVelocityY;
+            String opponentCoord = JoinGameActivity.sendReceive.coordinates;
+            String[] opponentCoordList = opponentCoord.split(",");
+            if (opponentCoordList.length > 1){
+                int opponentX = Integer.parseInt(opponentCoordList[1]); // raw coords of player
+                int opponentY = Integer.parseInt(opponentCoordList[2]);
 
-                    int difY = opponentY - ScreenConstants.SCREEN_HEIGHT/2;
-                    opponentY = ScreenConstants.SCREEN_HEIGHT/2 - difY;
+                int difY = opponentY - ScreenConstants.SCREEN_HEIGHT/2;
+                opponentY = ScreenConstants.SCREEN_HEIGHT/2 - difY;
 
-                    int difX = opponentX - ScreenConstants.SCREEN_WIDTH/2;
-                    opponentX = ScreenConstants.SCREEN_WIDTH/2 -difX;
-             //       opponentX = -1*(opponentX);
-                    opponentPoint.set(opponentX, opponentY);
-                    opponent.update(opponentPoint);
-                    //}
+                int difX = opponentX - ScreenConstants.SCREEN_WIDTH/2;
+                opponentX = ScreenConstants.SCREEN_WIDTH/2 -difX;
 
-                    if (status.equals("client")){
-                        String puckCoord = JoinGameActivity.sendReceive.puckCoordinates;
-                        String[] puckCoordList = puckCoord.split(",");
-                        int puckX = Integer.parseInt(puckCoordList[0]); // raw coords of player
-                        int puckY = Integer.parseInt(puckCoordList[1]);
-                        int puckDifY = puckY - ScreenConstants.SCREEN_HEIGHT/2;
-                        puckY = ScreenConstants.SCREEN_HEIGHT/2 - puckDifY;
 
-                        int puckDifX = puckX - ScreenConstants.SCREEN_WIDTH/2;
-                        puckX = ScreenConstants.SCREEN_WIDTH/2 -puckDifX;
-                        //       opponentX = -1*(opponentX);
-                        puckPoint.set(puckX, puckY);
-                        puck.update(puckPoint);
-                    }
+                opponentPoint.set(opponentX, opponentY);
+                opponent.update(opponentPoint);
+            }
+
+            
+            String opponentVelocities = JoinGameActivity.sendReceive.velocities;
+            String[] opponentVelocitesList = opponentVelocities.split(",");
+
+            if (opponentVelocitesList.length > 1){
+                int opponentVelocityX = Integer.parseInt(opponentVelocitesList[1]);
+                int opponentVelocityY = Integer.parseInt(opponentVelocitesList[2]);
+
+                opponentPaddleVelocityX =  -opponentVelocityX;
+                opponentPaddleVelocityY =  -opponentVelocityY;
+            }
+
+
+
+            if (status.equals("client")){
+                String puckCoord = JoinGameActivity.sendReceive.puckCoordinates;
+                String[] puckCoordList = puckCoord.split(",");
+                if (puckCoordList.length > 1){
+                    int puckX = Integer.parseInt(puckCoordList[1]); // raw coords of player
+                    int puckY = Integer.parseInt(puckCoordList[2]);
+                    int puckDifY = puckY - ScreenConstants.SCREEN_HEIGHT/2;
+                    puckY = ScreenConstants.SCREEN_HEIGHT/2 - puckDifY;
+
+                    int puckDifX = puckX - ScreenConstants.SCREEN_WIDTH/2;
+                    puckX = ScreenConstants.SCREEN_WIDTH/2 -puckDifX;
+                    puckPoint.set(puckX, puckY);
+                    puck.update(puckPoint);
                 }
-            }, 0, 100, TimeUnit.MILLISECONDS);
+            }
+
+
+
 
 
         }
+
     }
 
 
@@ -175,7 +177,7 @@ public class Panel extends SurfaceView implements SurfaceHolder.Callback, View.O
         puckPoint.x = (int) (puckPoint.x + (puckVelocityX));
         puckPoint.y = (int) (puckPoint.y + (puckVelocityY));
         puckPoint.set(puckPoint.x, puckPoint.y);
-        puck.update(puckPoint);
+        //puck.update(puckPoint);
 
         float playerdx = puckPoint.x - playerPoint.x;
         float playerdy = puckPoint.y - playerPoint.y;
@@ -194,7 +196,7 @@ public class Panel extends SurfaceView implements SurfaceHolder.Callback, View.O
             puckPoint.y = (int) (puckPoint.y + (puckVelocityY));
 
             puckPoint.set(puckPoint.x, puckPoint.y);
-            puck.update(puckPoint);
+            //puck.update(puckPoint);
         }
         if (opponentdistance < puck.getPuckSize() + opponent.getSize()){
             //They collide
@@ -204,7 +206,7 @@ public class Panel extends SurfaceView implements SurfaceHolder.Callback, View.O
             puckPoint.y = (int) (puckPoint.y + (puckVelocityY));
 
             puckPoint.set(puckPoint.x, puckPoint.y);
-            puck.update(puckPoint);
+            //puck.update(puckPoint);
         }
 
 
@@ -213,23 +215,24 @@ public class Panel extends SurfaceView implements SurfaceHolder.Callback, View.O
             puckVelocityX = -puckVelocityX;
             puckPoint.x = (int) (puckPoint.x + (puckVelocityX));
             puckPoint.set(puckPoint.x, puckPoint.y);
-            puck.update(puckPoint);
+            //puck.update(puckPoint);
         }else if(puckPoint.x - puck.getPuckSize() < 0){
             puckVelocityX = -puckVelocityX;
             puckPoint.x = (int) (puckPoint.x + (puckVelocityX));
             puckPoint.set(puckPoint.x, puckPoint.y);
-            puck.update(puckPoint);
+            //puck.update(puckPoint);
         }else if(puckPoint.y - puck.getPuckSize() < 0){
             puckVelocityY = -puckVelocityY;
             puckPoint.y = (int) (puckPoint.y + (puckVelocityY));
             puckPoint.set(puckPoint.x, puckPoint.y);
-            puck.update(puckPoint);
+            //puck.update(puckPoint);
         }else if(puckPoint.y + puck.getPuckSize() > ScreenConstants.SCREEN_HEIGHT){
             puckVelocityY = -puckVelocityY;
             puckPoint.y = (int) (puckPoint.y + (puckVelocityY));
             puckPoint.set(puckPoint.x, puckPoint.y);
-            puck.update(puckPoint);
+            //puck.update(puckPoint);
         }
+        puck.update(puckPoint);
         puckVelocityY = (float) (puckVelocityY * 0.99);
         puckVelocityX = (float) (puckVelocityX * 0.99);
     }
@@ -321,7 +324,7 @@ public class Panel extends SurfaceView implements SurfaceHolder.Callback, View.O
                 continue;
 
             Canvas canvas = myHolder.lockCanvas();
-
+            update();
             ballIntersectUpdate();
             if (canvas!= null) {
                 draw(canvas);
@@ -367,7 +370,7 @@ public class Panel extends SurfaceView implements SurfaceHolder.Callback, View.O
                 break;
         }
 
-        update();
+
         return true;
     }
 
@@ -382,23 +385,26 @@ public class Panel extends SurfaceView implements SurfaceHolder.Callback, View.O
                 public void run() {
                     String playerX = String.valueOf(playerPoint.x);
                     String playerY = String.valueOf(playerPoint.y);
-                    String playerVelocityX = String.valueOf(playerPaddleVelocityX);
-                    String playerVelocityY = String.valueOf(playerPaddleVelocityY);
-                    String coord = playerX + "," + playerY + "," +  playerVelocityX + "," + playerVelocityY;
-                    Log.e("PADDLE BYTES", Arrays.toString(coord.getBytes()));
-                    JoinGameActivity.sendReceive.write(coord.getBytes());
+                    String coord = "a" + "," + playerX + "," + playerY;
+                    JoinGameActivity.sendReceive.write(coord);
+
+                    String playerVelocityX = String.valueOf((int)playerPaddleVelocityX);
+                    String playerVelocityY = String.valueOf((int)playerPaddleVelocityY);
+                    String velocities = "b" + "," + playerVelocityX + "," + playerVelocityY;
+                    JoinGameActivity.sendReceive.write(velocities);
 
                     if (status.equals("host")){
                         String puckX = String.valueOf(puckPoint.x);
                         String puckY = String.valueOf(puckPoint.y);
-                        String puckCoord = puckX + "," + puckY;
-                        Log.e("PUCK BYTES", Arrays.toString(puckCoord.getBytes()));
-                        JoinGameActivity.sendReceive.write(puckCoord.getBytes());
+                        String puckCoord = "c" + "," + puckX + "," + puckY;
+                        JoinGameActivity.sendReceive.write(puckCoord);
                     }
-                }
-            }, 0, 100, TimeUnit.MILLISECONDS);
 
-           // JoinGameActivity.sendReceive.write(status.getBytes());
+
+                }
+            }, 0, 4, TimeUnit.MILLISECONDS);
+
+
 
         }
     });
@@ -406,11 +412,5 @@ public class Panel extends SurfaceView implements SurfaceHolder.Callback, View.O
     public boolean onTouch(View view, MotionEvent motionEvent) {
         return false;
     }
-    public static final byte[] intToByteArray(int value) {
-        return new byte[] {
-                (byte)(value >>> 24),
-                (byte)(value >>> 16),
-                (byte)(value >>> 8),
-                (byte)value};
-    }
+
 }

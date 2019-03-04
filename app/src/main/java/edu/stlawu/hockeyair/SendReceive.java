@@ -3,20 +3,26 @@ package edu.stlawu.hockeyair;
 import android.os.Handler;
 import android.os.Looper;
 import android.os.Message;
+import android.util.Log;
 
+import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.io.OutputStream;
+import java.io.PrintWriter;
 import java.net.Socket;
+import java.util.Arrays;
 
 public class SendReceive extends Thread {
 
     private Socket socket;
-    private InputStream inputStream;
-    private OutputStream outputStream;
+    private PrintWriter printWriter;
+    private BufferedReader bufferedReader;
     String textSent = "";
     String coordinates = "";
     String puckCoordinates = "";
+    String velocities = "";
 
 
     static final int MESSAGE_READ = 1;
@@ -27,8 +33,13 @@ public class SendReceive extends Thread {
         socket = skt;
 
         try {
-            inputStream = socket.getInputStream();
-            outputStream = socket.getOutputStream();
+            InputStream inputStream = socket.getInputStream();
+            OutputStream outputStream = socket.getOutputStream();
+
+
+            printWriter =  new PrintWriter(outputStream, true);
+            bufferedReader = new BufferedReader(new InputStreamReader(inputStream));
+
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -39,83 +50,66 @@ public class SendReceive extends Thread {
         public void handleMessage(Message msg) {
             switch (msg.what){
                 case 1:
-                    byte[] readbuff = (byte[]) msg.obj;
-                    textSent = new String(readbuff, 0, msg.arg1);
+                    textSent = (String) msg.obj;
                     break;
-
-
-            }
-        }
-    };
-
-
-    Handler paddleHandler = new Handler(Looper.getMainLooper()){
-      @Override
-      public void handleMessage(Message msg){
-          switch (msg.what){
-              case 2:
-                  byte[] read = (byte[]) msg.obj;
-                  coordinates = new String(read, 0, msg.arg1);
-                  break;
-          }
-      }
-    };
-
-    Handler puckHandler = new Handler(Looper.getMainLooper()){
-        @Override
-        public void handleMessage(Message msg){
-            switch (msg.what) {
+                case 2:
+                    coordinates = (String) msg.obj;
+                    break;
                 case 3:
-                    byte[] puckRead = (byte[]) msg.obj;
-                    puckCoordinates = new String(puckRead, 0, msg.arg1);
+                    puckCoordinates = (String) msg.obj;
+                    break;
+                case 4:
+                    velocities = (String) msg.obj;
                     break;
             }
         }
     };
+
+
 
 
 
     @Override
     public void run() {
-        byte[] buffer = new byte[500];
+
         int bytes;
+        String buffer;
 
         while(socket != null){
-                try {
-                    bytes = inputStream.read(buffer);
-                    if (bytes > 0) {
-                        if (bytes < 5){
+            try {
+                buffer = bufferedReader.readLine();
+                Log.e("BUFFER", buffer);
+                bytes = buffer.length();
 
-                            Message msg = handler.obtainMessage(1, bytes, -1, buffer);
-                            handler.sendMessage(msg);
-                        }else if (bytes > 5 && bytes < 10) {
-                            Message msg2 = puckHandler.obtainMessage(3, bytes, -1, buffer);
-                            puckHandler.sendMessage(msg2);
-                        }else{
 
-                            Message msg = paddleHandler.obtainMessage(2, bytes, -1, buffer);
-                            paddleHandler.sendMessage(msg);
+                if (buffer.startsWith("t")  ||buffer.startsWith("g") ){
 
-                        }
+                    handler.sendMessage(handler.obtainMessage(1, bytes, -1, buffer));
 
-                        
-                    }
-                } catch (IOException e) {
-                    e.printStackTrace();
+                }
+                if (buffer.startsWith("a")) {
+                    handler.sendMessage(handler.obtainMessage(2, bytes, -1, buffer));
+
+                }
+                if (buffer.startsWith("b")){
+
+                    handler.sendMessage(handler.obtainMessage(4, bytes, -1, buffer));
+                }
+                if (buffer.startsWith("c")){
+
+                    handler.sendMessage(handler.obtainMessage(3, bytes, -1, buffer));
+
                 }
 
+            } catch (IOException e) {
+                e.printStackTrace();
             }
+        }
     }
 
 
-    public void write(byte[] bytes){
-        try {
-
-            outputStream.write(bytes);
-            outputStream.flush();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+    public void write(String toSend){
+            printWriter.println(toSend);
     }
 
 

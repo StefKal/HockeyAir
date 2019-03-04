@@ -25,7 +25,10 @@ public class GameActivity extends Activity {
         getWindowManager().getDefaultDisplay().getMetrics(dm);
         ScreenConstants.SCREEN_WIDTH = dm.widthPixels;
         ScreenConstants.SCREEN_HEIGHT = dm.heightPixels;
-        setContentView(new Panel(this, status));
+
+        Panel mPanel = new Panel(this, status);
+        setContentView(mPanel);
+
 
 
     }
