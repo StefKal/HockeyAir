@@ -5,10 +5,8 @@ import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Path;
 import android.graphics.Point;
-import android.graphics.Rect;
 import android.graphics.RectF;
-import android.graphics.Region;
-import android.renderscript.ScriptC;
+
 
 public class Board implements GameObject {
 
@@ -46,7 +44,8 @@ public class Board implements GameObject {
 
     private int boardColor;
 
-    public Board(int boardColor){
+
+    Board(int boardColor){
         this.boardColor = boardColor;
 
         this.fullBoard = makeRectanglePath(0, 0, ScreenConstants.SCREEN_WIDTH, ScreenConstants.SCREEN_HEIGHT);
@@ -72,10 +71,8 @@ public class Board implements GameObject {
 
 
 
-
-
-
     }
+
 
     private float getDistance(float x1, float y1, float x2, float y2){
         return (float) Math.sqrt(((x2 - x1) * (x2 -x1)) + ((y2 - y1) * (y2 - y1)));

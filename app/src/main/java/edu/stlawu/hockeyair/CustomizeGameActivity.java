@@ -5,15 +5,13 @@ import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.text.TextUtils;
-import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
 
-import java.sql.Time;
+import java.io.InputStream;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
@@ -23,8 +21,11 @@ public class CustomizeGameActivity extends Activity {
 
     public Button submit;
     public List myList;
+
     private EditText puck_size, puck_speed, goal_size, rnd_num, time;
+    public static int int_puck_size, int_puck_speed, int_goal_size, int_round_num, int_time;
     private TextView required_text;
+
 
 
     @Override
@@ -70,6 +71,11 @@ public class CustomizeGameActivity extends Activity {
 //                    myList.set(2, (Integer.getInteger(goal_size.toString())));
 //                    myList.set(3, (Integer.getInteger(rnd_num.toString())));
 //                    myList.set(4, (Integer.getInteger(time.toString())));
+//                    int_puck_size = Integer.parseInt((String) myList.get(0));
+//                    int_puck_speed = Integer.parseInt((String)myList.get(1));
+//                    int_goal_size = Integer.parseInt((String) myList.get(2));
+//                    int_round_num = Integer.parseInt((String) myList.get(3));
+//                    int_time = Integer.parseInt((String) myList.get(4));
                     submit.setEnabled(false);
                     writeThread.start();
 
