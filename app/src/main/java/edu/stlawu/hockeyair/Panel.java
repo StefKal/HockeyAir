@@ -1,6 +1,5 @@
 package edu.stlawu.hockeyair;
 
-import android.annotation.SuppressLint;
 import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.Color;
@@ -9,11 +8,14 @@ import android.graphics.Point;
 import android.graphics.Rect;
 import android.graphics.RectF;
 
+import android.util.Log;
 import android.view.MotionEvent;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
 import android.view.VelocityTracker;
 import android.view.View;
+
+import java.util.Arrays;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
@@ -25,7 +27,11 @@ public class Panel extends SurfaceView implements SurfaceHolder.Callback, View.O
 
 
     private boolean gameOver=false;
+
     private int timer;
+
+    private RectF playerGoal;
+    private RectF opponentGoal;
 
     private Board theBoard;
     private Paddle player;
@@ -65,7 +71,6 @@ public class Panel extends SurfaceView implements SurfaceHolder.Callback, View.O
         super(context);
 
 
-
         isRunning = true;
         myThread = new Thread(this);
         myThread.start();
@@ -89,17 +94,25 @@ public class Panel extends SurfaceView implements SurfaceHolder.Callback, View.O
         playerScore = 0;
         opponentScore = 0;
 
+        playerGoal = makeRectanglePath((ScreenConstants.SCREEN_WIDTH/2)-(ScreenConstants.SCREEN_WIDTH/4), ScreenConstants.SCREEN_HEIGHT-20,
+                (ScreenConstants.SCREEN_WIDTH/2)+(ScreenConstants.SCREEN_WIDTH/4), ScreenConstants.SCREEN_HEIGHT+20);
+
+        opponentGoal =  makeRectanglePath((ScreenConstants.SCREEN_WIDTH/2)-(ScreenConstants.SCREEN_WIDTH/4),
+                -20, (ScreenConstants.SCREEN_WIDTH/2)+(ScreenConstants.SCREEN_WIDTH/4), +20);
+
+
 
         playerPoint = new Point(ScreenConstants.SCREEN_WIDTH/2, 3*ScreenConstants.SCREEN_HEIGHT/4);
         opponentPoint = new Point(ScreenConstants.SCREEN_WIDTH/2, ScreenConstants.SCREEN_HEIGHT/4 );
         puckPoint = new Point(ScreenConstants.SCREEN_WIDTH/2, ScreenConstants.SCREEN_HEIGHT/2);
-
-
+        
         player.update(playerPoint);
         opponent.update(opponentPoint);
         puck.update(puckPoint);
 
+
         timer = 10000;
+
         puckVelocityX = 0;
         puckVelocityY = 0;
         playerPaddleVelocityX = 0;
@@ -109,15 +122,16 @@ public class Panel extends SurfaceView implements SurfaceHolder.Callback, View.O
         sendCoordinates.start();
         timerThread.start();
 
-
     }
 
 
     //gameLoop
     public void update(){
-        if (timer == 0){
+
+        if (timer == 0) {
             gameOver = true;
         }
+
         if(!gameOver) {
 
             String opponentCoord = JoinGameActivity.sendReceive.paddleCoordinates;
@@ -174,6 +188,7 @@ public class Panel extends SurfaceView implements SurfaceHolder.Callback, View.O
         }
 
     }
+
 
 
     //checks if the ball intersected any of the mallets
@@ -238,69 +253,133 @@ public class Panel extends SurfaceView implements SurfaceHolder.Callback, View.O
             //puck.update(puckPoint);
         }
         puck.update(puckPoint);
-        puckVelocityY = (float) (puckVelocityY * 0.99); //* CustomizeGameActivity.int_puck_speed;
-        puckVelocityX = (float) (puckVelocityX * 0.99); //* CustomizeGameActivity.int_puck_speed;
+        puckVelocityY = (float) (puckVelocityY * 0.99);
+        puckVelocityX = (float) (puckVelocityX * 0.99);
     }
 
     public void goal(){
-        playerPoint = new Point(ScreenConstants.SCREEN_WIDTH/2,3*ScreenConstants.SCREEN_HEIGHT/4);
+
+        final Paint paint = new Paint();
+        paint.setColor(Color.WHITE);
+
+        playerPoint = new Point(ScreenConstants.SCREEN_WIDTH/2, 3*ScreenConstants.SCREEN_HEIGHT/4 );
+
+        player.update(playerPoint);
+
         puckPoint = new Point(ScreenConstants.SCREEN_WIDTH/2,ScreenConstants.SCREEN_HEIGHT/2);
 
         oldX=ScreenConstants.SCREEN_WIDTH/2;
         oldY=3*ScreenConstants.SCREEN_HEIGHT/4;
 
-        player.update(playerPoint);
-        puck.update(puckPoint);
-
         puckVelocityX=0;
         puckVelocityY=0;
+
     }
 
-    @SuppressLint("DefaultLocale")
-    public void draw(Canvas canvas){
+
+
+
+    //draws the board
+    private RectF makeRectanglePath(float left, float top, float right, float bot){
+        RectF rectangle;
+
+        rectangle = new RectF(left, top, right, bot);
+
+        return rectangle;
+    }
+
+    public void draw(final Canvas canvas) {
         super.draw(canvas);
-        if (canvas!= null) {
-            canvas.drawColor(Color.WHITE);
+        final Paint paint = new Paint();
+        canvas.drawColor(Color.WHITE);
 
-            theBoard.draw(canvas);
-            puck.draw(canvas);
-            opponent.draw(canvas);
-            player.draw(canvas);
+        canvas.drawRect(playerGoal, paint);
+        canvas.drawRect(opponentGoal, paint);
+
+        theBoard.draw(canvas);
+        puck.draw(canvas);
+        opponent.draw(canvas);
+        player.draw(canvas);
+
+        paint.setColor(Color.WHITE);
+
+        if (puck.getPuck().intersect(playerGoal)) {
 
 
-            Paint paint = new Paint();
-            paint.setColor(Color.WHITE);
-            paint.setTextSize(80);
+            goal();
 
-            int tens = timer % 10;
-            int seconds = (timer / 10) % 60;
-            int minutes = (timer / 600) % 60;
-
-            String mTimer = String.format("%02d:%02d:%d",minutes, seconds, tens);
-
-            canvas.drawText(mTimer, ScreenConstants.SCREEN_WIDTH -300, 70, paint);
+            opponentScore += 1;
 
         }
-//        if(gameOver){
-//
-//            paint.setTextSize(100);
-//            paint.setColor(Color.GREEN);
-//            drawScore(canvas, paint, playerScore + " - " + opponentScore);
-//        }
-    }
 
-    public void drawScore(Canvas canvas, Paint paint, String score){
+        if (puck.getPuck().intersect(opponentGoal)) {
+
+            goal();
+
+            playerScore += 1;
+
+        }
+
+        paint.setColor(Color.WHITE);
+        paint.setTextSize(80);
+
+        int tens = timer % 10;
+        int seconds = (timer / 10) % 60;
+        int minutes = (timer / 600) % 60;
+
+        String mTimer = String.format("%02d:%02d:%d",minutes, seconds, tens);
+
+        canvas.drawText(mTimer, ScreenConstants.SCREEN_WIDTH -300, 70, paint);
+
+
+
+        paint.setColor(Color.WHITE);
         paint.setTextAlign(Paint.Align.LEFT);
         paint.setTextSize(80);
         Rect rect = new Rect();
         canvas.getClipBounds(rect);
 
+        canvas.drawText(String.valueOf(opponentScore), 200, 200, paint);
+        canvas.drawText(String.valueOf(playerScore), ScreenConstants.SCREEN_WIDTH - 280, ScreenConstants.SCREEN_HEIGHT - 200, paint);
 
-        paint.getTextBounds(score, 0, score.length(), rect);
-        canvas.drawText(score, 200, 200, paint);
-        canvas.drawText(score, ScreenConstants.SCREEN_WIDTH - 280, ScreenConstants.SCREEN_HEIGHT - 200, paint);
     }
 
+//    public void drawScore(Canvas canvas, Paint paint, String score){
+//        paint.setTextAlign(Paint.Align.LEFT);
+//        paint.setTextSize(80);
+//        Rect rect = new Rect();
+//        canvas.getClipBounds(rect);
+//
+//
+//        paint.getTextBounds(score, 0, score.length(), rect);
+//        canvas.drawText(score, 200, 200, paint);
+//        canvas.drawText(score, ScreenConstants.SCREEN_WIDTH - 280, ScreenConstants.SCREEN_HEIGHT - 200, paint);
+//    }
+
+    @Override
+    public void surfaceCreated(SurfaceHolder holder) {
+        //mainThread = new MainThread(getHolder(),this);
+
+    }
+
+    @Override
+    public void surfaceChanged(SurfaceHolder holder, int format, int width, int height) {
+
+    }
+
+    @Override
+    public void surfaceDestroyed(SurfaceHolder holder) {
+//        while(true){
+//            try{
+//                mainThread.setRunning(false);
+//                mainThread.join();
+//
+//            }catch(Exception e){
+//                e.printStackTrace();
+//            }
+//        }
+
+    }
 
     @Override
     public void run() {
@@ -317,6 +396,7 @@ public class Panel extends SurfaceView implements SurfaceHolder.Callback, View.O
                 draw(canvas);
                 myHolder.unlockCanvasAndPost(canvas);
             }
+
         }
     }
 
@@ -363,6 +443,18 @@ public class Panel extends SurfaceView implements SurfaceHolder.Callback, View.O
 
     final ScheduledExecutorService task = Executors.newScheduledThreadPool(2);
 
+    Thread timerThread = new Thread(new Runnable() {
+        @Override
+        public void run() {
+            task.scheduleAtFixedRate(new Runnable() {
+                @Override
+                public void run() {
+                    timer--;
+                }
+            },0,100, TimeUnit.MILLISECONDS);
+        }
+    });
+
     Thread sendCoordinates = new Thread(new Runnable() {
 
         @Override
@@ -395,35 +487,9 @@ public class Panel extends SurfaceView implements SurfaceHolder.Callback, View.O
 
         }
     });
-
-    Thread timerThread = new Thread(new Runnable() {
-        @Override
-        public void run() {
-            task.scheduleAtFixedRate(new Runnable() {
-                @Override
-                public void run() {
-                    timer--;
-                }
-            },0,100, TimeUnit.MILLISECONDS);
-        }
-    });
-
-
-
     @Override
     public boolean onTouch(View view, MotionEvent motionEvent) {
         return false;
     }
-    @Override
-    public void surfaceCreated(SurfaceHolder holder) {
-    }
-    @Override
-    public void surfaceChanged(SurfaceHolder holder, int format, int width, int height) {
-    }
-
-    @Override
-    public void surfaceDestroyed(SurfaceHolder holder) {
-    }
-
 
 }
