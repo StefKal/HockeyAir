@@ -39,7 +39,6 @@ public class SendReceive extends Thread {
             InputStream inputStream = socket.getInputStream();
             OutputStream outputStream = socket.getOutputStream();
 
-
             printWriter =  new PrintWriter(outputStream, true);
             bufferedReader = new BufferedReader(new InputStreamReader(inputStream));
 
