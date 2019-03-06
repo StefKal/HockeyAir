@@ -11,7 +11,7 @@ public class Puck implements GameObject{
     private int puckColor;
     private int puckSize;
 
-    public Puck(RectF puck, int puckColor, int puckSize){
+    Puck(RectF puck, int puckColor, int puckSize){
         this.puck = puck;
         this.puckColor = puckColor;
         this.puckSize = puckSize;

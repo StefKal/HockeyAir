@@ -1,5 +1,6 @@
 package edu.stlawu.hockeyair;
 
+import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
@@ -26,43 +27,39 @@ public class CustomizeGameActivity extends Activity {
     private TextView required_text;
 
 
-
-    public CustomizeGameActivity() {
-    }
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_cutomize_game);
 
+        initialize();
+
+
+    }
+
+
+    private void initialize(){
         submit = findViewById(R.id.submit_btn);
-
         required_text = findViewById(R.id.required_fields);
-
         puck_size = findViewById(R.id.edit_puck_size);
         puck_speed = findViewById(R.id.edit_puck_speed);
         goal_size = findViewById(R.id.edit_goal_size);
         rnd_num = findViewById(R.id.edit_rounds);
         time = findViewById(R.id.edit_time);
         myList = new ArrayList();
-
-
-
     }
 
 
     private boolean check_empty(EditText aText){
-        if (TextUtils.isEmpty(aText.toString()))
-            return true;
-        else{
-            return false;
-        }
+        return TextUtils.isEmpty(aText.toString());
     }
 
     @Override
     protected void onResume() {
         super.onResume();
+
         submit.setOnClickListener(new View.OnClickListener() {
+            @SuppressLint("SetTextI18n")
             @Override
             public void onClick(View v) {
                 if (check_empty(puck_size) || check_empty(puck_speed) || check_empty(goal_size) || check_empty(rnd_num) || check_empty(time)){
@@ -82,13 +79,13 @@ public class CustomizeGameActivity extends Activity {
             }
         });
     }
-    final ScheduledExecutorService scheduleTaskExecutor = Executors.newScheduledThreadPool(1);
 
+
+    // THREAD THAT SENDS "TRUE" TO CLIENT, WAITS FOR "GOT" TO START GAME ACTIVITY
+    final ScheduledExecutorService scheduleTaskExecutor = Executors.newScheduledThreadPool(1);
     Thread writeThread = new Thread(new Runnable() {
         @Override
         public void run() {
-
-
             JoinGameActivity.sendReceive.write("true");
 
             scheduleTaskExecutor.scheduleAtFixedRate(new Runnable() {

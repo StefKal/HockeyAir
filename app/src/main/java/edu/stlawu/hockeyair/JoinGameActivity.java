@@ -1,5 +1,6 @@
 package edu.stlawu.hockeyair;
 
+import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.BroadcastReceiver;
 import android.content.Context;
@@ -38,8 +39,7 @@ public class JoinGameActivity extends Activity {
     private IntentFilter mIntentFilter;
 
 
-    private List<WifiP2pDevice> peers = new ArrayList<WifiP2pDevice>();
-    private String[] deviceNameArray;
+    private List<WifiP2pDevice> peers = new ArrayList<>();
     private WifiP2pDevice[] deviceArray;
 
 
@@ -55,7 +55,6 @@ public class JoinGameActivity extends Activity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_join_game);
-
         initializer();
     }
 
@@ -118,7 +117,7 @@ public class JoinGameActivity extends Activity {
                 peers.clear();
                 peers.addAll(peerList.getDeviceList());
 
-                deviceNameArray = new String[peerList.getDeviceList().size()];
+                String[] deviceNameArray = new String[peerList.getDeviceList().size()];
                 deviceArray = new WifiP2pDevice[peerList.getDeviceList().size()];
                 int index = 0;
 
@@ -128,22 +127,25 @@ public class JoinGameActivity extends Activity {
                     index++;
                 }
 
-                ArrayAdapter<String> adapter = new ArrayAdapter<String>(getApplicationContext(), android.R.layout.simple_list_item_1, deviceNameArray);
+                ArrayAdapter<String> adapter = new ArrayAdapter<>(getApplicationContext(), android.R.layout.simple_list_item_1, deviceNameArray);
                 mListView.setAdapter(adapter);
             }
 
             if(peers.size() == 0 ){
                 Toast.makeText(getApplicationContext(), "No Device Found", Toast.LENGTH_SHORT).show();
-                return;
             }
         }
     };
 
     WifiP2pManager.ConnectionInfoListener connectionInfoListener = new WifiP2pManager.ConnectionInfoListener() {
+        @SuppressLint("SetTextI18n")
         @Override
         public void onConnectionInfoAvailable(WifiP2pInfo info) {
             InetAddress groupOwnerAddress = info.groupOwnerAddress;
-
+            /*              !!! V E R Y  I M P O R T A N T !!!
+                 this is where the devices are split into Host and Client
+                            and the client and server threads start
+            */
             if(info.groupFormed && info.isGroupOwner){
                 connectionStatus.setText("Host");
                 serverClass = new ServerClass();
@@ -161,11 +163,13 @@ public class JoinGameActivity extends Activity {
             @Override
             public void onClick(View v) {
                 mManager.discoverPeers(mChannel, new WifiP2pManager.ActionListener() {
+                    @SuppressLint("SetTextI18n")
                     @Override
                     public void onSuccess() {
                         connectionStatus.setText("Discovery Started");
                     }
 
+                    @SuppressLint("SetTextI18n")
                     @Override
                     public void onFailure(int reason) {
                         connectionStatus.setText("Discovery Failed" );
@@ -187,18 +191,11 @@ public class JoinGameActivity extends Activity {
                     public void onSuccess() {
                         Toast.makeText(getApplicationContext(), "Connected to "+ device.deviceName, Toast.LENGTH_SHORT).show();
                         if(connectionStatus.getText().equals("Host")) {
-
-
                             startActivity(new Intent(JoinGameActivity.this, CustomizeGameActivity.class));
-
-
                         }
                         else if(connectionStatus.getText().equals("Client")){
-
-
                             startActivity(new Intent(JoinGameActivity.this, WaitingForHostActivity.class));
                         }
-
                     }
 
                     @Override

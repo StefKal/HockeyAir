@@ -16,17 +16,20 @@ import java.util.Arrays;
 
 public class SendReceive extends Thread {
 
-    private Socket socket;
-    private PrintWriter printWriter;
-    private BufferedReader bufferedReader;
+    // These need to be visible to Panel for communication
     String textSent = "";
-    String coordinates = "";
+    String paddleCoordinates = "";
     String puckCoordinates = "";
     String velocities = "";
 
+    private Socket socket;
+    private PrintWriter printWriter;
+    private BufferedReader bufferedReader;
 
-    static final int MESSAGE_READ = 1;
-    static final int COORDINATES = 2;
+    private static final int MESSAGE_READ = 1;
+    private static final int PADDLE_COORDINATES = 2;
+    private static final int PADDLE_VELOCITIES = 3;
+    private static final int PUCK_COORDINATES = 4;
 
 
     SendReceive(Socket skt){
@@ -45,73 +48,57 @@ public class SendReceive extends Thread {
         }
     }
 
-    Handler handler = new Handler(Looper.getMainLooper()){
+
+    // sets instance variables according to msg.what
+    private Handler handler = new Handler(Looper.getMainLooper()){
         @Override
         public void handleMessage(Message msg) {
             switch (msg.what){
-                case 1:
+                case MESSAGE_READ:
                     textSent = (String) msg.obj;
                     break;
-                case 2:
-                    coordinates = (String) msg.obj;
+                case PADDLE_COORDINATES:
+                    paddleCoordinates = (String) msg.obj;
                     break;
-                case 3:
+                case PUCK_COORDINATES:
                     puckCoordinates = (String) msg.obj;
                     break;
-                case 4:
+                case PADDLE_VELOCITIES:
                     velocities = (String) msg.obj;
                     break;
             }
         }
     };
 
-
-
-
-
+    // constructs messages in queue and sends them to the handler
     @Override
     public void run() {
-
-        int bytes;
         String buffer;
 
         while(socket != null){
             try {
                 buffer = bufferedReader.readLine();
-                Log.e("BUFFER", buffer);
-                bytes = buffer.length();
 
-
-                if (buffer.startsWith("t")  ||buffer.startsWith("g") ){
-
-                    handler.sendMessage(handler.obtainMessage(1, bytes, -1, buffer));
-
+                if (buffer.startsWith("t")  ||buffer.startsWith("g") ){ //  one sends "true" and other sends "got"
+                    handler.sendMessage(handler.obtainMessage(MESSAGE_READ, -1, -1, buffer));
                 }
                 if (buffer.startsWith("a")) {
-                    handler.sendMessage(handler.obtainMessage(2, bytes, -1, buffer));
-
+                    handler.sendMessage(handler.obtainMessage(PADDLE_COORDINATES, -1, -1, buffer));
                 }
                 if (buffer.startsWith("b")){
-
-                    handler.sendMessage(handler.obtainMessage(4, bytes, -1, buffer));
+                    handler.sendMessage(handler.obtainMessage(PADDLE_VELOCITIES, -1, -1, buffer));
                 }
                 if (buffer.startsWith("c")){
-
-                    handler.sendMessage(handler.obtainMessage(3, bytes, -1, buffer));
-
+                    handler.sendMessage(handler.obtainMessage(PUCK_COORDINATES, -1, -1, buffer));
                 }
-
             } catch (IOException e) {
                 e.printStackTrace();
             }
         }
     }
 
-
+    // writs messages to printWriter
     public void write(String toSend){
             printWriter.println(toSend);
     }
-
-
-
 }

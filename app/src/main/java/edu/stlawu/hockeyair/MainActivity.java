@@ -10,9 +10,7 @@ import android.widget.Button;
 
 
 public class MainActivity extends Activity {
-    private Button btn_create_game, btn_join_game, btn_about;
-
-
+    private Button btn_join_game, btn_about;
 
 
     @Override
@@ -30,10 +28,7 @@ public class MainActivity extends Activity {
 
     }
 
-
-
     private void setClickListeners(){
-
 
         btn_about.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -44,7 +39,6 @@ public class MainActivity extends Activity {
                 builder.setPositiveButton(R.string.ok, new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
-                        return;
                     }
                 });
                 builder.show();
@@ -52,8 +46,7 @@ public class MainActivity extends Activity {
             }
         });
 
-
-
+        // CALLS JOIN GAME ACTIVITY
         btn_join_game.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {

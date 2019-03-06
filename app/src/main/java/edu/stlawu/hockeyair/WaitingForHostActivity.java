@@ -20,6 +20,7 @@ public class WaitingForHostActivity extends Activity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.waiting_for_host);
 
+        // THREAD JUST WAITS TO HEAR "TRUE" FROM HOST AND SENDS "GET"
         final ScheduledExecutorService scheduleTaskExecutor = Executors.newScheduledThreadPool(1);
 
         scheduleTaskExecutor.scheduleAtFixedRate(new Runnable() {
