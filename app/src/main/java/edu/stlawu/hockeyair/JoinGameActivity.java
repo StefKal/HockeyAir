@@ -150,10 +150,12 @@ public class JoinGameActivity extends Activity {
                 connectionStatus.setText("Host");
                 serverClass = new ServerClass();
                 serverClass.start();
+                startActivity(new Intent(JoinGameActivity.this, CustomizeGameActivity.class));
             }else if(info.groupFormed){
                 connectionStatus.setText("Client");
                 clientClass = new ClientClass(groupOwnerAddress);
                 clientClass.start();
+                startActivity(new Intent(JoinGameActivity.this, WaitingForHostActivity.class));
             }
         }
     };
@@ -190,12 +192,6 @@ public class JoinGameActivity extends Activity {
                     @Override
                     public void onSuccess() {
                         Toast.makeText(getApplicationContext(), "Connected to "+ device.deviceName, Toast.LENGTH_SHORT).show();
-                        if(connectionStatus.getText().equals("Host")) {
-                            startActivity(new Intent(JoinGameActivity.this, CustomizeGameActivity.class));
-                        }
-                        else if(connectionStatus.getText().equals("Client")){
-                            startActivity(new Intent(JoinGameActivity.this, WaitingForHostActivity.class));
-                        }
                     }
 
                     @Override
