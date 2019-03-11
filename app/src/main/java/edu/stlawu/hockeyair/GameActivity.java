@@ -1,7 +1,6 @@
 package edu.stlawu.hockeyair;
 
 import android.app.Activity;
-import android.content.ComponentName;
 import android.os.Bundle;
 import android.util.DisplayMetrics;
 import android.view.Window;

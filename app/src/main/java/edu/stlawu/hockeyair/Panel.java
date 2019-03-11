@@ -1,5 +1,6 @@
 package edu.stlawu.hockeyair;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.Color;
@@ -7,20 +8,18 @@ import android.graphics.Paint;
 import android.graphics.Point;
 import android.graphics.Rect;
 import android.graphics.RectF;
-
-import android.util.Log;
 import android.view.MotionEvent;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
 import android.view.VelocityTracker;
 import android.view.View;
 
-import java.util.Arrays;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
 
+@SuppressLint("ViewConstructor")
 public class Panel extends SurfaceView implements SurfaceHolder.Callback, View.OnTouchListener, Runnable {
 
     private String status;
@@ -64,8 +63,8 @@ public class Panel extends SurfaceView implements SurfaceHolder.Callback, View.O
     int opponentScore;
 
     SurfaceHolder myHolder;
-    Thread myThread = null;
-    boolean isRunning = false;
+    Thread myThread;
+    boolean isRunning;
 
     public Panel(Context context, String status){
         super(context);
@@ -327,7 +326,7 @@ public class Panel extends SurfaceView implements SurfaceHolder.Callback, View.O
         int seconds = (timer / 10) % 60;
         int minutes = (timer / 600) % 60;
 
-        String mTimer = String.format("%02d:%02d:%d",minutes, seconds, tens);
+        @SuppressLint("DefaultLocale") String mTimer = String.format("%02d:%02d:%d",minutes, seconds, tens);
 
         canvas.drawText(mTimer, ScreenConstants.SCREEN_WIDTH -300, 70, paint);
 
@@ -400,6 +399,7 @@ public class Panel extends SurfaceView implements SurfaceHolder.Callback, View.O
         }
     }
 
+    @SuppressLint("ClickableViewAccessibility")
     @Override
     public boolean onTouchEvent(MotionEvent event) {
         int action = event.getAction();
