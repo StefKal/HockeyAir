@@ -420,8 +420,8 @@ public class Panel extends SurfaceView implements SurfaceHolder.Callback, View.O
                 float newY = event.getRawY();
 
                 if(player.getPaddle().contains(newX, newY)) {
-                    if(newY < ScreenConstants.SCREEN_HEIGHT/2)
-                        newY = ScreenConstants.SCREEN_HEIGHT/2;
+                    if(newY < ScreenConstants.SCREEN_HEIGHT/2 + player.getSize())
+                        newY = ScreenConstants.SCREEN_HEIGHT/2 + player.getSize();
                     mVelocityTracker.computeCurrentVelocity(10);
                     playerPaddleVelocityX = mVelocityTracker.getXVelocity();
                     playerPaddleVelocityY = mVelocityTracker.getYVelocity();
