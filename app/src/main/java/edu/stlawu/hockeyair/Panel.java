@@ -127,7 +127,7 @@ public class Panel extends SurfaceView implements SurfaceHolder.Callback, View.O
         puck.update(puckPoint);
 
 
-        timer = int_time;
+        timer = int_time * 60 * 10;
 
 
         puckVelocityX = 0;
