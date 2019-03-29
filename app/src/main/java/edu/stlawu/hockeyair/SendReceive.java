@@ -78,6 +78,7 @@ public class SendReceive extends Thread {
             try {
                 buffer = bufferedReader.readLine();
 
+
                 if (buffer.startsWith("t")  ||buffer.startsWith("g") ){ //  one sends "true" and other sends "got"
                     handler.sendMessage(handler.obtainMessage(MESSAGE_READ, -1, -1, buffer));
                 }
