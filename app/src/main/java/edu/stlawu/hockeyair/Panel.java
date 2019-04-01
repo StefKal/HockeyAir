@@ -394,7 +394,7 @@ public class Panel extends SurfaceView implements SurfaceHolder.Callback, View.O
     @Override
     public void surfaceChanged(SurfaceHolder holder, int format, int width, int height) {
 
-    }
+    }//
 
     @Override
     public void surfaceDestroyed(SurfaceHolder holder) {
