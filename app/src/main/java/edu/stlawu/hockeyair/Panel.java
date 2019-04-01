@@ -419,7 +419,7 @@ public class Panel extends SurfaceView implements SurfaceHolder.Callback, View.O
         else if (puck.getPuck().intersect(opponentGoal)) {
             goal();
             playerScore += 1;
-        }
+        }//
     }
 
 
