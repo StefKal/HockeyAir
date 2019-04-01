@@ -4,7 +4,8 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context=".MainActivity"
-    android:background="@drawable/airhockeybackground">
+    android:background="@drawable/airhockeybackground"
+    android:id="@+id/main_activity">
 
     <LinearLayout
         android:layout_width="wrap_content"
@@ -15,6 +16,7 @@
             android:id="@+id/join_game"
             android:layout_width="100dp"
             android:layout_height="wrap_content"
+            android:layout_weight="1"
             android:text="@string/join_game" />
 
 

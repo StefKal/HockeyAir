@@ -23,14 +23,16 @@ public class WaitingForHostActivity extends Activity {
 
         scheduleTaskExecutor.scheduleAtFixedRate(new Runnable() {
             public void run() {
-                if (JoinGameActivity.sendReceive.textSent.equals("true")) {
+                if (JoinGameActivity.sendReceive != null) {
+                    if (JoinGameActivity.sendReceive.textSent.equals("true")) {
 
-                    JoinGameActivity.sendReceive.write("got");
-                    Intent intent = new Intent(WaitingForHostActivity.this, GameActivity.class);
-                    intent.putExtra("status", "client");
-                    startActivity(intent);
+                        JoinGameActivity.sendReceive.write("got");
+                        Intent intent = new Intent(WaitingForHostActivity.this, GameActivity.class);
+                        intent.putExtra("status", "client");
+                        startActivity(intent);
 
-                    scheduleTaskExecutor.shutdown();
+                        scheduleTaskExecutor.shutdown();
+                    }
                 }
             }
         }, 0, 1000, TimeUnit.MILLISECONDS);
