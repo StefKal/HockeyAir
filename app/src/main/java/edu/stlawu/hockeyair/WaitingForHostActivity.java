@@ -3,9 +3,7 @@ package edu.stlawu.hockeyair;
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
-import android.util.Log;
 
-import java.util.Arrays;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
@@ -25,14 +23,16 @@ public class WaitingForHostActivity extends Activity {
 
         scheduleTaskExecutor.scheduleAtFixedRate(new Runnable() {
             public void run() {
-                if (JoinGameActivity.sendReceive.textSent.equals("true")) {
+                if (JoinGameActivity.sendReceive != null) {
+                    if (JoinGameActivity.sendReceive.textSent.equals("true")) {
 
-                    JoinGameActivity.sendReceive.write("got");
-                    Intent intent = new Intent(WaitingForHostActivity.this, GameActivity.class);
-                    intent.putExtra("status", "client");
-                    startActivity(intent);
+                        JoinGameActivity.sendReceive.write("got");
+                        Intent intent = new Intent(WaitingForHostActivity.this, GameActivity.class);
+                        intent.putExtra("status", "client");
+                        startActivity(intent);
 
-                    scheduleTaskExecutor.shutdown();
+                        scheduleTaskExecutor.shutdown();
+                    }
                 }
             }
         }, 0, 1000, TimeUnit.MILLISECONDS);

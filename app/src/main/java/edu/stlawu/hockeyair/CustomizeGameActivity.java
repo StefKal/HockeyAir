@@ -12,7 +12,6 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
 
-import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.Executors;
@@ -82,20 +81,23 @@ public class CustomizeGameActivity extends Activity {
     Thread writeThread = new Thread(new Runnable() {
         @Override
         public void run() {
-            JoinGameActivity.sendReceive.write("true");
+            if (JoinGameActivity.sendReceive != null){
+                JoinGameActivity.sendReceive.write("true");
 
-            scheduleTaskExecutor.scheduleAtFixedRate(new Runnable() {
-                @Override
-                public void run() {
-                    if(JoinGameActivity.sendReceive.textSent.equals("got")){
-                        Intent intent = new Intent(CustomizeGameActivity.this, GameActivity.class);
-                        intent.putExtra("status", "host");
-                        startActivity(intent);
-                        scheduleTaskExecutor.shutdown();
+                scheduleTaskExecutor.scheduleAtFixedRate(new Runnable() {
+                    @Override
+                    public void run() {
+                        if(JoinGameActivity.sendReceive.textSent.equals("got")){
+                            Intent intent = new Intent(CustomizeGameActivity.this, GameActivity.class);
+                            intent.putExtra("status", "host");
+                            startActivity(intent);
+                            scheduleTaskExecutor.shutdown();
 
+                        }
                     }
-                }
-            }, 0, 1000, TimeUnit.MILLISECONDS);
+                }, 0, 1000, TimeUnit.MILLISECONDS);
+            }
+
 
         }
     });

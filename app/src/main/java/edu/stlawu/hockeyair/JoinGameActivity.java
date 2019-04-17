@@ -150,17 +150,11 @@ public class JoinGameActivity extends Activity {
                 connectionStatus.setText("Host");
                 serverClass = new ServerClass();
                 serverClass.start();
-                while (sendReceive == null) {
-
-                }
                 startActivity(new Intent(JoinGameActivity.this, CustomizeGameActivity.class));
             }else if(info.groupFormed){
                 connectionStatus.setText("Client");
                 clientClass = new ClientClass(groupOwnerAddress);
                 clientClass.start();
-                while (sendReceive == null) {
-
-                }
                 startActivity(new Intent(JoinGameActivity.this, WaitingForHostActivity.class));
             }
         }
