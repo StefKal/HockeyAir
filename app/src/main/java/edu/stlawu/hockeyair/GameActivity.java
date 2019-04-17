@@ -20,10 +20,6 @@ public class GameActivity extends Activity {
     Panel mPanel;
     private String status;
 
-
-
-    public View game_over;
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
