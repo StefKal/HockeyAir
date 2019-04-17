@@ -44,10 +44,6 @@ public class CustomizeGameActivity extends Activity {
     private void initialize(){
         submit = findViewById(R.id.submit_btn);
         required_text = findViewById(R.id.required_fields);
-        puck_size = findViewById(R.id.edit_puck_size);
-        puck_speed = findViewById(R.id.edit_puck_speed);
-        goal_size = findViewById(R.id.edit_goal_size);
-        goal_num = findViewById(R.id.edit_rounds);
         time = findViewById(R.id.edit_time);
     }
 
@@ -64,14 +60,10 @@ public class CustomizeGameActivity extends Activity {
             @SuppressLint("SetTextI18n")
             @Override
             public void onClick(View v) {
-                if (check_empty(puck_size) || check_empty(puck_speed) || check_empty(goal_size) || check_empty(goal_num) || check_empty(time)){
+                if (check_empty(time)){
                     required_text.setText("Please fill in all text fields");
                 }else {
 
-                    int_puck_size = Integer.parseInt(puck_size.getText().toString());
-                    int_puck_speed = Integer.parseInt(puck_speed.getText().toString());
-                    int_goal_size = Integer.parseInt(goal_size.getText().toString());
-                    int_goal_num = Integer.parseInt(goal_num.getText().toString());
                     int_time = Integer.parseInt(time.getText().toString());
 
                     submit.setEnabled(false);

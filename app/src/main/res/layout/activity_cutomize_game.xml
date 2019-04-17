@@ -36,45 +36,12 @@
         android:orientation="vertical"
         android:layout_weight="1">
 
-        <EditText
-            android:id="@+id/edit_puck_size"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:hint="Enter puck size 1-10"
-            android:inputType="number"
-            android:shadowColor="@android:color/black"
-            android:gravity="center"/>
-
-        <EditText
-            android:id="@+id/edit_puck_speed"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:hint="Enter puck speed 1-10"
-            android:inputType="number"
-            android:gravity="center"/>
-
-        <EditText
-            android:id="@+id/edit_goal_size"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:hint="Enter goal size 1-10"
-            android:inputType="number"
-            android:gravity="center"
-            />
-
-        <EditText
-            android:id="@+id/edit_rounds"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:hint="Enter number of goals to win"
-            android:inputType="number"
-            android:gravity="center"/>
 
         <EditText
             android:id="@+id/edit_time"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:hint="Enter time for each round in minutes"
+            android:hint="Enter time in minutes"
             android:inputType="number"
             android:gravity="center"/>
 
