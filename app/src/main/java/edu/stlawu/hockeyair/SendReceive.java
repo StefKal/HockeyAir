@@ -21,6 +21,7 @@ public class SendReceive extends Thread {
     String paddleCoordinates = "";
     String puckCoordinates = "";
     String velocities = "";
+    String score = "";
 
     private Socket socket;
     private PrintWriter printWriter;
@@ -30,6 +31,7 @@ public class SendReceive extends Thread {
     private static final int PADDLE_COORDINATES = 2;
     private static final int PADDLE_VELOCITIES = 3;
     private static final int PUCK_COORDINATES = 4;
+    private static final int SCORE = 5;
 
 
     SendReceive(Socket skt){
@@ -65,6 +67,11 @@ public class SendReceive extends Thread {
                 case PADDLE_VELOCITIES:
                     velocities = (String) msg.obj;
                     break;
+                case SCORE:
+                    score = (String) msg.obj;
+                    break;
+                default:
+                    break;
             }
         }
     };
@@ -90,6 +97,10 @@ public class SendReceive extends Thread {
                 }
                 if (buffer.startsWith("c")){
                     handler.sendMessage(handler.obtainMessage(PUCK_COORDINATES, -1, -1, buffer));
+                }
+                if (buffer.startsWith("d")) {
+                    handler.sendMessage(handler.obtainMessage(SCORE, -1, -1, buffer));
+                    Log.e("SCORE", score);
                 }
             } catch (IOException e) {
                 e.printStackTrace();
