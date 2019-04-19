@@ -98,7 +98,7 @@ public class SendReceive extends Thread {
                 }
                 if (buffer.startsWith("d")) {
                     handler.sendMessage(handler.obtainMessage(SCORE, -1, -1, buffer));
-                    Log.e("SCORE", score);
+                    //Log.e("SCORE", score);
                 }
             } catch (IOException e) {
                 e.printStackTrace();
