@@ -87,7 +87,14 @@ public class Panel extends SurfaceView implements SurfaceHolder.Callback, View.O
     public Panel(Context context, String status){
         super(context);
 
-        int_time = CustomizeGameActivity.int_time;
+        if (status.equals("client")){
+            String timers = JoinGameActivity.sendReceive.timer;
+            String[] timerList = timers.split(",");
+
+            int_time = Integer.parseInt(timerList[1]);
+        }else{
+            int_time = CustomizeGameActivity.int_time;
+        }
 
         isRunning = true;
         myThread = new Thread(this);

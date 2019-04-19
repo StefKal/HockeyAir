@@ -74,15 +74,8 @@ public class GameActivity extends Activity {
                             public void run() {
 
                                 setContentView(R.layout.game_over);
-                                Button bPlayAgain = findViewById(R.id.button_play_again);
                                 Button bExit = findViewById(R.id.button_exit);
 
-                                bPlayAgain.setOnClickListener(new View.OnClickListener() {
-                                    @Override
-                                    public void onClick(View v) {
-
-                                    }
-                                });
 
                                 bExit.setOnClickListener(new View.OnClickListener() {
                                     @Override

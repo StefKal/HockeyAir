@@ -14,27 +14,11 @@
         android:layout_gravity="center"
         android:orientation="vertical">
 
-        <TextView
-            android:id="@+id/textView3"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:gravity="center"
-            android:text="DO YOU WANT TO PLAY AGAIN?"
-            android:textSize="20sp"
-            />
-
-        <Button
-            android:id="@+id/button_play_again"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:gravity="center"
-            android:text="Yes" />
-
         <Button
             android:id="@+id/button_exit"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:gravity="center"
-            android:text="No" />
+            android:text="Exit" />
     </LinearLayout>
 </FrameLayout>

@@ -84,6 +84,8 @@ public class CustomizeGameActivity extends Activity {
             if (JoinGameActivity.sendReceive != null){
                 JoinGameActivity.sendReceive.write("true");
 
+                JoinGameActivity.sendReceive.write("e" + "," + String.valueOf(int_time));
+
                 scheduleTaskExecutor.scheduleAtFixedRate(new Runnable() {
                     @Override
                     public void run() {
